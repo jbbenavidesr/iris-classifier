@@ -1,13 +1,13 @@
 """Simple application for classifying iris flowers.
 
-This application will have 2 users: A botanist, which is the one who will add the classified
-data of iris flowers that will be used to train the model. And a user which wants an unknown
-sample of iris flower to be classified by the application. The botanist will select the
-hyperparameters used by the model.
+This application will have 2 users: A botanist, which is the one who will add the
+classified data of iris flowers that will be used to train the model. And a user which
+wants an unknown sample of iris flower to be classified by the application. The botanist
+will select the hyperparameters used by the model.
 """
-from typing import Optional, Iterable
 import datetime
 import weakref
+from typing import Iterable, Optional
 
 
 class Sample:

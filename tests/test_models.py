@@ -1,6 +1,6 @@
-import weakref
 import pytest
-from iris_classifier.models import Sample, Hyperparameter, TrainingData
+
+from iris_classifier.models import Hyperparameter, Sample, TrainingData
 
 from .mock_data import training_data as mock_training_data
 

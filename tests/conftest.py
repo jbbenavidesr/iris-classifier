@@ -1,6 +1,6 @@
 import pytest
 
-from iris_classifier.hyperparameters import Hyperparameter, ED
+from iris_classifier.hyperparameters import ED, Hyperparameter
 from iris_classifier.training import TrainingData
 
 from .mock_data import training_data as mock_training_data

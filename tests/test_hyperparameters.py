@@ -39,8 +39,10 @@ def test_hyperparameter_test(training_data: TrainingData) -> None:
 def test_distance_class_throws_not_implemented_error() -> None:
     """Test that the Distance class throws a NotImplementedError."""
     distance = Distance()
+    sample_a = Sample(1, 2, 3, 4, "Iris-setosa")
+    sample_b = Sample(5, 6, 7, 8, "Iris-setosa")
     with pytest.raises(NotImplementedError):
-        distance.distance(None, None)
+        distance.distance(sample_a, sample_b)
 
 
 def test_euclidean_distance() -> None:

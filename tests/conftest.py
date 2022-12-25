@@ -1,6 +1,6 @@
 import pytest
 
-from iris_classifier.hyperparameters import Hyperparameter
+from iris_classifier.hyperparameters import Hyperparameter, ED
 from iris_classifier.training import TrainingData
 
 from .mock_data import training_data as mock_training_data
@@ -17,4 +17,5 @@ def training_data() -> TrainingData:
 @pytest.fixture(scope="module")
 def hyperparameter(training_data: TrainingData) -> Hyperparameter:
     """Return a hyperparameter."""
-    return Hyperparameter(3, training_data)
+    distance = ED()
+    return Hyperparameter(3, distance, training_data)

@@ -7,19 +7,22 @@ import pytest
 if TYPE_CHECKING:
     from iris_classifier.training import TrainingData
 
-from iris_classifier.hyperparameters import CD, ED, MD, Distance, Hyperparameter
+from iris_classifier.hyperparameters import CD, ED, MD, SD, Distance, Hyperparameter
 from iris_classifier.samples import Sample
 
 
 def test_hyperparameter_init(training_data: TrainingData) -> None:
     """Test the initialization of a hyperparameter."""
-    hyperparameter = Hyperparameter(3, training_data)
+    distance = ED()
+    hyperparameter = Hyperparameter(3, distance, training_data)
     assert hyperparameter.k == 3
+    assert hyperparameter.distance == distance
     assert hyperparameter.data() == training_data
 
 
 def test_hyperparameter_classify(training_data: TrainingData) -> None:
-    hyperparameter = Hyperparameter(3, training_data)
+    distance = ED()
+    hyperparameter = Hyperparameter(3, distance, training_data)
     assert hyperparameter.classify(training_data.training[0]) == "Iris-setosa"
 
 
@@ -31,7 +34,8 @@ def test_hyperparameter_test(training_data: TrainingData) -> None:
             iris_setosa_in_testing += 1
 
     quality = iris_setosa_in_testing / len(training_data.testing)
-    hyperparameter = Hyperparameter(3, training_data)
+    distance = ED()
+    hyperparameter = Hyperparameter(3, distance, training_data)
     hyperparameter.test()
     assert hyperparameter.quality == quality
 
@@ -67,3 +71,11 @@ def test_chebyshev_distance() -> None:
     sample_a = Sample(1, 2, 3, 4, "Iris-setosa")
     sample_b = Sample(5, 6, 7, 8, "Iris-setosa")
     assert cd.distance(sample_a, sample_b) == 4
+
+
+def test_sorensen_distance() -> None:
+    """Test the sorensen distance."""
+    sd = SD()
+    sample_a = Sample(1, 2, 3, 4, "Iris-setosa")
+    sample_b = Sample(5, 6, 7, 8, "Iris-setosa")
+    assert sd.distance(sample_a, sample_b) == 0.4444444444444444

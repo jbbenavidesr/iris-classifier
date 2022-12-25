@@ -1,4 +1,5 @@
 """Hyperparameter sets for the model."""
+from __future__ import annotations
 
 import math
 import weakref
@@ -12,13 +13,14 @@ class Hyperparameter:
     """A hyperparameter set of values for the model and the overall quality of the
     classification."""
 
-    def __init__(self, k: int, training: TrainingData) -> None:
+    def __init__(self, k: int, distance: Distance, training: TrainingData) -> None:
         """Initialize a hyperparameter set.
 
         :param k: The k value for the model.
         :param training: The training data used to train the model.
         """
         self.k = k
+        self.distance = distance
         self.data: weakref.ReferenceType[TrainingData] = weakref.ref(training)
         self.quality: float
 
@@ -99,5 +101,26 @@ class CD(Distance):
                 abs(a.sepal_width - b.sepal_width),
                 abs(a.petal_length - b.petal_length),
                 abs(a.petal_width - b.petal_width),
+            ]
+        )
+
+
+class SD(Distance):
+    """Sorensen distance."""
+
+    def distance(self, a: Sample, b: Sample) -> float:
+        return sum(
+            [
+                abs(a.sepal_length - b.sepal_length),
+                abs(a.sepal_width - b.sepal_width),
+                abs(a.petal_length - b.petal_length),
+                abs(a.petal_width - b.petal_width),
+            ]
+        ) / sum(
+            [
+                a.sepal_length + b.sepal_length,
+                a.sepal_width + b.sepal_width,
+                a.petal_length + b.petal_length,
+                a.petal_width + b.petal_width,
             ]
         )

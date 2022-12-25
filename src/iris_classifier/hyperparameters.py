@@ -1,5 +1,6 @@
 """Hyperparameter sets for the model."""
 
+import math
 import weakref
 from typing import Optional
 
@@ -47,3 +48,56 @@ class Hyperparameter:
         """
         # For testing
         return "Iris-setosa"
+
+
+class Distance:
+    """Definition of a distance computation."""
+
+    def distance(self, a: Sample, b: Sample) -> float:
+        """Compute the distance between two samples.
+
+        :param a: The first sample.
+        :param b: The second sample.
+        :return: The distance between the samples.
+        """
+        raise NotImplementedError
+
+
+class ED(Distance):
+    """Euclidean distance."""
+
+    def distance(self, a: Sample, b: Sample) -> float:
+        return math.hypot(
+            a.sepal_length - b.sepal_length,
+            a.sepal_width - b.sepal_width,
+            a.petal_length - b.petal_length,
+            a.petal_width - b.petal_width,
+        )
+
+
+class MD(Distance):
+    """Manhattan distance."""
+
+    def distance(self, a: Sample, b: Sample) -> float:
+        return sum(
+            [
+                abs(a.sepal_length - b.sepal_length),
+                abs(a.sepal_width - b.sepal_width),
+                abs(a.petal_length - b.petal_length),
+                abs(a.petal_width - b.petal_width),
+            ]
+        )
+
+
+class CD(Distance):
+    """Chebyshev distance."""
+
+    def distance(self, a: Sample, b: Sample) -> float:
+        return max(
+            [
+                abs(a.sepal_length - b.sepal_length),
+                abs(a.sepal_width - b.sepal_width),
+                abs(a.petal_length - b.petal_length),
+                abs(a.petal_width - b.petal_width),
+            ]
+        )

@@ -6,8 +6,9 @@ wants an unknown sample of iris flower to be classified by the application. The 
 will select the hyperparameters used by the model.
 """
 from __future__ import annotations
+
 import datetime
-from typing import Iterable, TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterable
 
 if TYPE_CHECKING:
     from .hyperparameters import Hyperparameter

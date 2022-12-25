@@ -2,10 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import pytest
+
 if TYPE_CHECKING:
     from iris_classifier.training import TrainingData
 
-from iris_classifier.hyperparameters import Hyperparameter
+from iris_classifier.hyperparameters import CD, ED, MD, Distance, Hyperparameter
+from iris_classifier.samples import Sample
 
 
 def test_hyperparameter_init(training_data: TrainingData) -> None:
@@ -31,3 +34,34 @@ def test_hyperparameter_test(training_data: TrainingData) -> None:
     hyperparameter = Hyperparameter(3, training_data)
     hyperparameter.test()
     assert hyperparameter.quality == quality
+
+
+def test_distance_class_throws_not_implemented_error() -> None:
+    """Test that the Distance class throws a NotImplementedError."""
+    distance = Distance()
+    with pytest.raises(NotImplementedError):
+        distance.distance(None, None)
+
+
+def test_euclidean_distance() -> None:
+    """Test the euclidean distance."""
+    ed = ED()
+    sample_a = Sample(1, 2, 3, 4, "Iris-setosa")
+    sample_b = Sample(5, 6, 7, 8, "Iris-setosa")
+    assert ed.distance(sample_a, sample_b) == 8
+
+
+def test_manhattan_distance() -> None:
+    """Test the manhattan distance."""
+    md = MD()
+    sample_a = Sample(1, 2, 3, 4, "Iris-setosa")
+    sample_b = Sample(5, 6, 7, 8, "Iris-setosa")
+    assert md.distance(sample_a, sample_b) == 16
+
+
+def test_chebyshev_distance() -> None:
+    """Test the chebyshev distance."""
+    cd = CD()
+    sample_a = Sample(1, 2, 3, 4, "Iris-setosa")
+    sample_b = Sample(5, 6, 7, 8, "Iris-setosa")
+    assert cd.distance(sample_a, sample_b) == 4

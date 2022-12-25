@@ -46,7 +46,7 @@ class Sample:
         if self.classification is None:
             classification = ""
         else:
-            classification = f", {self.classification}"
+            classification = f", classification={self.classification}"
 
         return (
             f"{known_unknown}("
@@ -83,7 +83,7 @@ class Hyperparameter:
         :param training: The training data used to train the model.
         """
         self.k = k
-        self.data = weakref.ReferenceType["TrainingData"] = weakref.ref(training)
+        self.data: weakref.ReferenceType["TrainingData"] = weakref.ref(training)
         self.quality: float
 
     def test(self) -> None:
@@ -110,7 +110,8 @@ class Hyperparameter:
         :param sample: The sample to classify.
         :return: The classification of the sample.
         """
-        pass
+        # For testing
+        return "Iris-setosa"
 
 
 class TrainingData:
@@ -137,7 +138,7 @@ class TrainingData:
                 float(raw_sample["sepal_width"]),
                 float(raw_sample["petal_length"]),
                 float(raw_sample["petal_width"]),
-                raw_sample["spicies"],
+                raw_sample["species"],
             )
             if n % 10 == 0:
                 self.testing.append(sample)

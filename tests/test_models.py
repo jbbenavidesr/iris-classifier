@@ -1,6 +1,8 @@
 import pytest
 
-from iris_classifier.models import Hyperparameter, Sample, TrainingData
+from iris_classifier.training import TrainingData
+from iris_classifier.samples import Sample
+from iris_classifier.hyperparameters import Hyperparameter
 
 from .mock_data import training_data as mock_training_data
 

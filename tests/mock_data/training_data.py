@@ -1,5 +1,5 @@
 # 50 samples of Iris data
-training_data = [
+training_data: list[dict[str, str | float]] = [
     {
         "sepal_length": 5.1,
         "sepal_width": 3.5,

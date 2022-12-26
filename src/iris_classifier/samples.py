@@ -115,6 +115,8 @@ class KnownSample(Sample):
             )
         except ValueError:
             raise InvalidSampleError(f"Invalid sample in row: {row!r}")
+        except KeyError:
+            raise InvalidSampleError(f"Missing column in row: {row!r}")
 
 
 class UnknownSample(Sample):

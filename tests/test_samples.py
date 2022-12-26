@@ -135,6 +135,21 @@ def test_known_sample_from_dict_raises_error_on_invalid_floats() -> None:
     assert str(excinfo.value).startswith("Invalid sample in row:")
 
 
+def test_known_sample_from_dict_raises_error_on_missing_values() -> None:
+    """Test the creation of a known sample from a dict."""
+    with pytest.raises(InvalidSampleError) as excinfo:
+        KnownSample.from_dict(
+            {
+                "sepal_length": "1.0",
+                "sepal_width": "2.0",
+                "petal_length": "3.0",
+                "petal_width": "4.0",
+            }
+        )
+
+    assert str(excinfo.value).startswith("Missing column in row:")
+
+
 def test_matches_of_unclassified_sample() -> None:
     """Test the matching of a sample."""
     sample = KnownSample(1.0, 2.0, 3.0, 4.0, "Iris-setosa")

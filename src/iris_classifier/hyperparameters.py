@@ -26,7 +26,7 @@ class Hyperparameter:
 
     def test(self) -> None:
         """Test the hyperparameter set."""
-        training_data: Optional["TrainingData"] = self.data()
+        training_data: Optional[TrainingData] = self.data()
         if not training_data:
             raise RuntimeError(
                 "Training data is not available anymore. Broken Weak Reference."

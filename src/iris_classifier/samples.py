@@ -1,4 +1,8 @@
+from __future__ import annotations
+
 from typing import Optional
+
+from .exceptions import InvalidSampleError
 
 
 class Sample:
@@ -90,6 +94,23 @@ class KnownSample(Sample):
         :return: True if the classification matches the spicies, False otherwise.
         """
         return self.species == self.classification
+
+    @classmethod
+    def from_dict(cls, row: dict[str, str]) -> KnownSample:
+        """Create a KnownSample from a dictionary."""
+        if row["species"] not in {"Iris-setosa", "Iris-versicolor", "Iris-virginica"}:
+            raise InvalidSampleError(f"Invalid species in row: {row!r}")
+
+        try:
+            return cls(
+                sepal_length=float(row["sepal_length"]),
+                sepal_width=float(row["sepal_width"]),
+                petal_length=float(row["petal_length"]),
+                petal_width=float(row["petal_width"]),
+                species=row["species"],
+            )
+        except ValueError:
+            raise InvalidSampleError(f"Invalid sample in row: {row!r}")
 
 
 class UnknownSample(Sample):

@@ -5,7 +5,7 @@ import math
 import weakref
 from typing import Optional
 
-from .samples import Sample, KnownSample
+from .samples import KnownSample, Sample
 from .training import TrainingData
 
 

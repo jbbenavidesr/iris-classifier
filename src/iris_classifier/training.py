@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Iterable
 if TYPE_CHECKING:
     from .hyperparameters import Hyperparameter
 
-from .samples import Sample
+from .samples import KnownSample, Sample
 
 
 class TrainingData:
@@ -28,14 +28,14 @@ class TrainingData:
         self.name = name
         self.uploaded: datetime.datetime
         self.tested: datetime.datetime
-        self.training: list[Sample] = []
-        self.testing: list[Sample] = []
+        self.training: list[KnownSample] = []
+        self.testing: list[KnownSample] = []
         self.tuning: list[Hyperparameter] = []
 
     def load(self, raw_data_source: Iterable[dict[str, str | float]]) -> None:
         """Load the raw data source and partition it into training and testing data."""
         for n, raw_sample in enumerate(raw_data_source):
-            sample = Sample(
+            sample = KnownSample(
                 float(raw_sample["sepal_length"]),
                 float(raw_sample["sepal_width"]),
                 float(raw_sample["petal_length"]),

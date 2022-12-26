@@ -10,7 +10,7 @@ class Sample:
         sepal_width: float,
         petal_length: float,
         petal_width: float,
-        spicies: Optional[str] = None,
+        species: Optional[str] = None,
     ) -> None:
         """Initialize a sample of an iris flower.
 
@@ -18,18 +18,18 @@ class Sample:
         :param sepal_width: The width of the sepal.
         :param petal_length: The length of the petal.
         :param petal_width: The width of the petal.
-        :param spicies: The spicies of the flower. If the sample is unknown, this value
+        :param species: The spicies of the flower. If the sample is unknown, this value
             should be None.
         """
         self.sepal_length = sepal_length
         self.sepal_width = sepal_width
         self.petal_length = petal_length
         self.petal_width = petal_width
-        self.spicies = spicies
+        self.species = species
         self.classification: Optional[str] = None
 
     def __repr__(self) -> str:
-        if self.spicies is None:
+        if self.species is None:
             known_unknown = "UnknownSample"
         else:
             known_unknown = "KnownSample"
@@ -45,7 +45,7 @@ class Sample:
             f"sepal_width={self.sepal_width}, "
             f"petal_length={self.petal_length}, "
             f"petal_width={self.petal_width}, "
-            f"spicies={self.spicies!r}{classification})"
+            f"species={self.species!r}{classification})"
         )
 
     def classify(self, classification: str) -> None:
@@ -60,4 +60,4 @@ class Sample:
 
         :return: True if the classification matches the spicies, False otherwise.
         """
-        return self.spicies == self.classification
+        return self.species == self.classification

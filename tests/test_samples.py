@@ -8,7 +8,7 @@ def test_sample_init() -> None:
     assert sample.sepal_width == 2.0
     assert sample.petal_length == 3.0
     assert sample.petal_width == 4.0
-    assert sample.spicies == "Iris-setosa"
+    assert sample.species == "Iris-setosa"
     assert sample.classification is None
 
 
@@ -21,7 +21,7 @@ def test_sample_repr_of_unknown_unclassified_sample() -> None:
         "sepal_width=2.0, "
         "petal_length=3.0, "
         "petal_width=4.0, "
-        "spicies=None)"
+        "species=None)"
     )
 
 
@@ -34,7 +34,7 @@ def test_sample_repr_of_known_unclassified_sample() -> None:
         "sepal_width=2.0, "
         "petal_length=3.0, "
         "petal_width=4.0, "
-        "spicies='Iris-setosa')"
+        "species='Iris-setosa')"
     )
 
 
@@ -55,7 +55,7 @@ def test_sample_repr_of_unknown_classified_sample() -> None:
         "sepal_width=2.0, "
         "petal_length=3.0, "
         "petal_width=4.0, "
-        "spicies=None, "
+        "species=None, "
         "classification=Iris-setosa)"
     )
 
@@ -70,7 +70,7 @@ def test_sample_repr_of_known_classified_sample() -> None:
         "sepal_width=2.0, "
         "petal_length=3.0, "
         "petal_width=4.0, "
-        "spicies='Iris-setosa', "
+        "species='Iris-setosa', "
         "classification=Iris-setosa)"
     )
 

@@ -30,7 +30,7 @@ def test_hyperparameter_test(training_data: TrainingData) -> None:
     """Test the testing of a hyperparameter."""
     iris_setosa_in_testing = 0
     for sample in training_data.testing:
-        if sample.spicies == "Iris-setosa":
+        if sample.species == "Iris-setosa":
             iris_setosa_in_testing += 1
 
     quality = iris_setosa_in_testing / len(training_data.testing)

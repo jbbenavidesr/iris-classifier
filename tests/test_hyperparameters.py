@@ -23,21 +23,16 @@ def test_hyperparameter_init(training_data: TrainingData) -> None:
 def test_hyperparameter_classify(training_data: TrainingData) -> None:
     distance = ED()
     hyperparameter = Hyperparameter(3, distance, training_data)
-    assert hyperparameter.classify(training_data.training[0]) == "Iris-setosa"
+    assert hyperparameter.classify(training_data.training[0]) == "Iris-virginica"
 
 
 def test_hyperparameter_test(training_data: TrainingData) -> None:
     """Test the testing of a hyperparameter."""
-    iris_setosa_in_testing = 0
-    for sample in training_data.testing:
-        if sample.species == "Iris-setosa":
-            iris_setosa_in_testing += 1
 
-    quality = iris_setosa_in_testing / len(training_data.testing)
     distance = ED()
     hyperparameter = Hyperparameter(3, distance, training_data)
     hyperparameter.test()
-    assert hyperparameter.quality == quality
+    assert hyperparameter.quality == 0.2
 
 
 def test_distance_class_throws_not_implemented_error() -> None:

@@ -5,7 +5,7 @@ import math
 import weakref
 from typing import Optional
 
-from .samples import Sample
+from .samples import Sample, KnownSample
 from .training import TrainingData
 
 
@@ -48,8 +48,26 @@ class Hyperparameter:
         :param sample: The sample to classify.
         :return: The classification of the sample.
         """
-        # For testing
-        return "Iris-setosa"
+        training_data: Optional[TrainingData] = self.data()
+        if not training_data:
+            raise RuntimeError(
+                "Training data is not available anymore. Broken Weak Reference."
+            )
+
+        distances: list[tuple[float, KnownSample]] = []
+
+        for training_sample in training_data.training:
+            distances.append(
+                (self.distance.distance(sample, training_sample), training_sample)
+            )
+
+        distances.sort(key=lambda x: x[0])
+
+        votes: dict[str, int] = {}
+        for i in range(self.k):
+            votes[distances[i][1].species] = votes.get(distances[i][1].species, 0) + 1
+
+        return max(votes, key=lambda x: votes[x])
 
 
 class Distance:

@@ -41,3 +41,13 @@ def test_training_data_classify(
     sample = training_data.classify(hyperparameter, training_data.training[0])
 
     assert sample.classification == "Iris-virginica"
+
+
+def test_training_data_load_invalid_sample() -> None:
+    """Test the loading of a training data with an invalid sample."""
+    training_data = TrainingData("Test training data")
+    mock_invalid_sample = [*mock_training_data]
+    mock_invalid_sample[0]["sepal_length"] = "invalid"
+    training_data.load(mock_invalid_sample)
+    assert len(training_data.training) == 0
+    assert len(training_data.testing) == 0

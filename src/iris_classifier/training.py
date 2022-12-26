@@ -13,7 +13,8 @@ from typing import TYPE_CHECKING, Iterable
 if TYPE_CHECKING:
     from .hyperparameters import Hyperparameter
 
-from .samples import KnownSample, Sample, Species
+from .samples import KnownSample, Sample
+from .exceptions import InvalidSampleError
 
 
 class TrainingData:
@@ -35,17 +36,16 @@ class TrainingData:
     def load(self, raw_data_source: Iterable[dict[str, str]]) -> None:
         """Load the raw data source and partition it into training and testing data."""
         for n, raw_sample in enumerate(raw_data_source):
-            sample = KnownSample(
-                float(raw_sample["sepal_length"]),
-                float(raw_sample["sepal_width"]),
-                float(raw_sample["petal_length"]),
-                float(raw_sample["petal_width"]),
-                Species(raw_sample["species"]),
-            )
-            if n % 10 == 0:
-                self.testing.append(sample)
-            else:
-                self.training.append(sample)
+            try:
+                sample = KnownSample.from_dict(raw_sample)
+                if n % 10 == 0:
+                    self.testing.append(sample)
+                else:
+                    self.training.append(sample)
+            except InvalidSampleError as exc:
+                print(f"Invalid sample found in row {n + 1}: {exc}")
+                return
+
         self.uploaded = datetime.datetime.now(tz=datetime.timezone.utc)
 
     def test(self, parameter: Hyperparameter) -> None:

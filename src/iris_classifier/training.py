@@ -33,20 +33,26 @@ class TrainingData:
         self.testing: list[KnownSample] = []
         self.tuning: list[Hyperparameter] = []
 
-    def load(self, raw_data_source: Iterable[dict[str, str]]) -> None:
-        """Load the raw data source and partition it into training and testing data."""
+    def load(self, raw_data_source: Iterable[dict[str, str]]) -> tuple[int, int]:
+        """Load the raw data source and partition it into training and testing data.
+
+        :return: The number of samples loaded and the number of invalid samples.
+        """
+        bad_count = 0
+        good_count = 0
         for n, raw_sample in enumerate(raw_data_source):
             try:
                 sample = KnownSample.from_dict(raw_sample)
+                good_count += 1
                 if n % 10 == 0:
                     self.testing.append(sample)
                 else:
                     self.training.append(sample)
             except InvalidSampleError as exc:
                 print(f"Invalid sample found in row {n + 1}: {exc}")
-                return
-
+                bad_count += 1
         self.uploaded = datetime.datetime.now(tz=datetime.timezone.utc)
+        return good_count, bad_count
 
     def test(self, parameter: Hyperparameter) -> None:
         """Test the hyperparameter set.

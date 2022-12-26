@@ -16,10 +16,12 @@ def test_training_data_init() -> None:
 def test_training_data_load() -> None:
     """Test the loading of a training data."""
     training_data = TrainingData("Test training data")
-    training_data.load(mock_training_data)
+    good, bad = training_data.load(mock_training_data)
     assert len(training_data.training) == 45
     assert len(training_data.testing) == 5
     assert training_data.uploaded is not None
+    assert good == 50
+    assert bad == 0
 
 
 def test_training_data_test(
@@ -48,6 +50,6 @@ def test_training_data_load_invalid_sample() -> None:
     training_data = TrainingData("Test training data")
     mock_invalid_sample = [*mock_training_data]
     mock_invalid_sample[0]["sepal_length"] = "invalid"
-    training_data.load(mock_invalid_sample)
-    assert len(training_data.training) == 0
-    assert len(training_data.testing) == 0
+    good, bad = training_data.load(mock_invalid_sample)
+    assert good == 49
+    assert bad == 1

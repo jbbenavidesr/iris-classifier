@@ -32,7 +32,7 @@ class TrainingData:
         self.testing: list[KnownSample] = []
         self.tuning: list[Hyperparameter] = []
 
-    def load(self, raw_data_source: Iterable[dict[str, str | float]]) -> None:
+    def load(self, raw_data_source: Iterable[dict[str, str]]) -> None:
         """Load the raw data source and partition it into training and testing data."""
         for n, raw_sample in enumerate(raw_data_source):
             sample = KnownSample(
@@ -40,7 +40,7 @@ class TrainingData:
                 float(raw_sample["sepal_width"]),
                 float(raw_sample["petal_length"]),
                 float(raw_sample["petal_width"]),
-                str(raw_sample["species"]),
+                raw_sample["species"],
             )
             if n % 10 == 0:
                 self.testing.append(sample)

@@ -116,7 +116,7 @@ def test_known_sample_from_dict_raises_error_on_wrong_species() -> None:
             }
         )
 
-    assert str(excinfo.value).startswith("Invalid species in row:")
+    assert str(excinfo.value).startswith("Invalid sample in row:")
 
 
 def test_known_sample_from_dict_raises_error_on_invalid_floats() -> None:

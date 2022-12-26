@@ -5,7 +5,7 @@ import math
 import weakref
 from typing import Optional
 
-from .samples import KnownSample, Sample
+from .samples import KnownSample, Sample, Species
 from .training import TrainingData
 
 
@@ -42,7 +42,7 @@ class Hyperparameter:
 
         self.quality = pass_count / (pass_count + fail_count)
 
-    def classify(self, sample: Sample) -> str:
+    def classify(self, sample: Sample) -> Species:
         """Classify a sample.
 
         :param sample: The sample to classify.
@@ -63,7 +63,7 @@ class Hyperparameter:
 
         distances.sort(key=lambda x: x[0])
 
-        votes: dict[str, int] = {}
+        votes: dict[Species, int] = {}
         for i in range(self.k):
             votes[distances[i][1].species] = votes.get(distances[i][1].species, 0) + 1
 

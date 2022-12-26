@@ -1,8 +1,15 @@
 from __future__ import annotations
 
 from typing import Optional
+from enum import Enum
 
 from .exceptions import InvalidSampleError
+
+
+class Species(str, Enum):
+    SETOSA = "Iris-setosa"
+    VERSICOLOR = "Iris-versicolor"
+    VIRGINICA = "Iris-virginica"
 
 
 class Sample:
@@ -28,7 +35,7 @@ class Sample:
         self.sepal_width = sepal_width
         self.petal_length = petal_length
         self.petal_width = petal_width
-        self.classification: Optional[str] = None
+        self.classification: Optional[Species] = None
 
     def __repr__(self) -> str:
         if self.classification is None:
@@ -44,12 +51,12 @@ class Sample:
             f"petal_width={self.petal_width}{classification})"
         )
 
-    def classify(self, classification: str) -> None:
+    def classify(self, classification: Species | str) -> None:
         """Classify the sample.
 
         :param classification: The classification of the sample.
         """
-        self.classification = classification
+        self.classification = Species(classification)
 
 
 class KnownSample(Sample):
@@ -61,7 +68,7 @@ class KnownSample(Sample):
         sepal_width: float,
         petal_length: float,
         petal_width: float,
-        species: str,
+        species: Species | str,
     ) -> None:
         """Initialize a sample of an iris flower with a known spicies.
 
@@ -72,7 +79,7 @@ class KnownSample(Sample):
         :param species: The spicies of the flower.
         """
         super().__init__(sepal_length, sepal_width, petal_length, petal_width)
-        self.species = species
+        self.species = Species(species)
 
     def __repr__(self) -> str:
         if self.classification is None:
@@ -98,16 +105,13 @@ class KnownSample(Sample):
     @classmethod
     def from_dict(cls, row: dict[str, str]) -> KnownSample:
         """Create a KnownSample from a dictionary."""
-        if row["species"] not in {"Iris-setosa", "Iris-versicolor", "Iris-virginica"}:
-            raise InvalidSampleError(f"Invalid species in row: {row!r}")
-
         try:
             return cls(
                 sepal_length=float(row["sepal_length"]),
                 sepal_width=float(row["sepal_width"]),
                 petal_length=float(row["petal_length"]),
                 petal_width=float(row["petal_width"]),
-                species=row["species"],
+                species=Species(row["species"]),
             )
         except ValueError:
             raise InvalidSampleError(f"Invalid sample in row: {row!r}")

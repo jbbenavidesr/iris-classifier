@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Iterable
 if TYPE_CHECKING:
     from .hyperparameters import Hyperparameter
 
-from .samples import KnownSample, Sample
+from .samples import KnownSample, Sample, Species
 
 
 class TrainingData:
@@ -40,7 +40,7 @@ class TrainingData:
                 float(raw_sample["sepal_width"]),
                 float(raw_sample["petal_length"]),
                 float(raw_sample["petal_width"]),
-                raw_sample["species"],
+                Species(raw_sample["species"]),
             )
             if n % 10 == 0:
                 self.testing.append(sample)

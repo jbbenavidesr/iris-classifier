@@ -34,7 +34,7 @@ class Hyperparameter:
 
         pass_count, fail_count = 0, 0
         for sample in training_data.testing:
-            sample.classify(self.classify(sample))
+            sample.classification = self.classify(sample)
             if sample.matches():
                 pass_count += 1
             else:

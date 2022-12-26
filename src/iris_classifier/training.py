@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from .hyperparameters import Hyperparameter
 
 from .exceptions import InvalidSampleError
-from .samples import Sample, TestingKnownSample, TrainingKnownSample
+from .samples import KnownSample, Sample, Purpose
 
 
 class TrainingData:
@@ -29,8 +29,8 @@ class TrainingData:
         self.name = name
         self.uploaded: datetime.datetime
         self.tested: datetime.datetime
-        self.training: list[TrainingKnownSample] = []
-        self.testing: list[TestingKnownSample] = []
+        self.training: list[KnownSample] = []
+        self.testing: list[KnownSample] = []
         self.tuning: list[Hyperparameter] = []
 
     def load(self, raw_data_source: Iterable[dict[str, str]]) -> tuple[int, int]:
@@ -43,10 +43,10 @@ class TrainingData:
         for n, raw_sample in enumerate(raw_data_source):
             try:
                 if n % 10 == 0:
-                    test = TestingKnownSample.from_dict(raw_sample)
+                    test = KnownSample.from_dict(raw_sample, Purpose.TESTING)
                     self.testing.append(test)
                 else:
-                    train = TrainingKnownSample.from_dict(raw_sample)
+                    train = KnownSample.from_dict(raw_sample, Purpose.TRAINING)
                     self.training.append(train)
                 good_count += 1
             except InvalidSampleError as exc:
@@ -72,5 +72,5 @@ class TrainingData:
         :return: The classified sample.
         """
         classification = parameter.classify(sample)
-        sample.classify(classification)
+        sample.classification = classification
         return sample

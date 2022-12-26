@@ -40,7 +40,7 @@ def test_training_data_classify(
     training_data: TrainingData, hyperparameter: Hyperparameter
 ) -> None:
     """Test the classification of a training data."""
-    sample = training_data.classify(hyperparameter, training_data.training[0])
+    sample = training_data.classify(hyperparameter, training_data.testing[0])
 
     assert sample.classification == "Iris-virginica"
 

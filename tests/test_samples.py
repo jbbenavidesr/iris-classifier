@@ -1,7 +1,13 @@
 import pytest
 
 from iris_classifier.exceptions import InvalidSampleError
-from iris_classifier.samples import KnownSample, Sample, UnknownSample
+from iris_classifier.samples import (
+    KnownSample,
+    Sample,
+    UnknownSample,
+    TestingKnownSample,
+    TrainingKnownSample,
+)
 
 
 def test_sample_init() -> None:
@@ -31,6 +37,35 @@ def test_sample_classify() -> None:
     sample = Sample(1.0, 2.0, 3.0, 4.0)
     sample.classify("Iris-setosa")
     assert sample.classification == "Iris-setosa"
+
+
+def test_sample_from_dict() -> None:
+    """Test the creation of a sample from a dictionary."""
+    sample = Sample.from_dict(
+        {
+            "sepal_length": "1.0",
+            "sepal_width": "2.0",
+            "petal_length": "3.0",
+            "petal_width": "4.0",
+        }
+    )
+    assert sample.sepal_length == 1.0
+    assert sample.sepal_width == 2.0
+    assert sample.petal_length == 3.0
+    assert sample.petal_width == 4.0
+
+
+def test_sample_from_dict_invalid() -> None:
+    """Test the creation of a sample from a dictionary with invalid values."""
+    with pytest.raises(InvalidSampleError):
+        Sample.from_dict(
+            {
+                "sepal_length": "1.0",
+                "sepal_width": "2.0",
+                "petal_length": "3.0",
+                "petal_width": "invalid",
+            }
+        )
 
 
 def test_sample_repr_of_classified_sample() -> None:
@@ -189,3 +224,80 @@ def test_unknown_sample_repr() -> None:
         "petal_length=3.0, "
         "petal_width=4.0)"
     )
+
+
+def test_training_known_sample_init() -> None:
+    """Test the initialization of a training known sample."""
+    sample = TrainingKnownSample(1.0, 2.0, 3.0, 4.0, "Iris-setosa")
+    assert sample.sepal_length == 1.0
+    assert sample.sepal_width == 2.0
+    assert sample.petal_length == 3.0
+    assert sample.petal_width == 4.0
+    assert sample.species == "Iris-setosa"
+
+
+def test_training_known_sample_repr() -> None:
+    """Test the repr of a training known sample."""
+    sample = TrainingKnownSample(1.0, 2.0, 3.0, 4.0, "Iris-setosa")
+    assert repr(sample) == (
+        "TrainingKnownSample("
+        "sepal_length=1.0, "
+        "sepal_width=2.0, "
+        "petal_length=3.0, "
+        "petal_width=4.0, "
+        "species=Iris-setosa)"
+    )
+
+
+def test_testing_known_sample_init() -> None:
+    """Test the initialization of a testing known sample."""
+    sample = TestingKnownSample(1.0, 2.0, 3.0, 4.0, "Iris-setosa")
+    assert sample.sepal_length == 1.0
+    assert sample.sepal_width == 2.0
+    assert sample.petal_length == 3.0
+    assert sample.petal_width == 4.0
+    assert sample.species == "Iris-setosa"
+
+
+def test_testing_known_sample_repr() -> None:
+    """Test the repr of a testing known sample."""
+    sample = TestingKnownSample(1.0, 2.0, 3.0, 4.0, "Iris-setosa")
+    assert repr(sample) == (
+        "TestingKnownSample("
+        "sepal_length=1.0, "
+        "sepal_width=2.0, "
+        "petal_length=3.0, "
+        "petal_width=4.0, "
+        "species=Iris-setosa)"
+    )
+
+
+def test_unknown_sample_from_dict() -> None:
+    """Test the creation of an unknown sample from a dict."""
+    sample = UnknownSample.from_dict(
+        {
+            "sepal_length": "1.0",
+            "sepal_width": "2.0",
+            "petal_length": "3.0",
+            "petal_width": "4.0",
+        }
+    )
+    assert sample.sepal_length == 1.0
+    assert sample.sepal_width == 2.0
+    assert sample.petal_length == 3.0
+    assert sample.petal_width == 4.0
+
+
+def test_unknown_sample_from_dict_invalid() -> None:
+    """Test the creation of an unknown sample from a dict."""
+    with pytest.raises(InvalidSampleError) as excinfo:
+        UnknownSample.from_dict(
+            {
+                "sepal_length": "unknown",
+                "sepal_width": "2.0",
+                "petal_length": "3.0",
+                "petal_width": "4.0",
+            }
+        )
+
+    assert str(excinfo.value).startswith("Invalid sample in row:")

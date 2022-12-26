@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Iterable
 if TYPE_CHECKING:
     from .hyperparameters import Hyperparameter
 
-from .samples import KnownSample, Sample
+from .samples import TestingKnownSample, TrainingKnownSample, Sample
 from .exceptions import InvalidSampleError
 
 
@@ -29,8 +29,8 @@ class TrainingData:
         self.name = name
         self.uploaded: datetime.datetime
         self.tested: datetime.datetime
-        self.training: list[KnownSample] = []
-        self.testing: list[KnownSample] = []
+        self.training: list[TrainingKnownSample] = []
+        self.testing: list[TestingKnownSample] = []
         self.tuning: list[Hyperparameter] = []
 
     def load(self, raw_data_source: Iterable[dict[str, str]]) -> tuple[int, int]:
@@ -42,12 +42,13 @@ class TrainingData:
         good_count = 0
         for n, raw_sample in enumerate(raw_data_source):
             try:
-                sample = KnownSample.from_dict(raw_sample)
-                good_count += 1
                 if n % 10 == 0:
-                    self.testing.append(sample)
+                    test = TestingKnownSample.from_dict(raw_sample)
+                    self.testing.append(test)
                 else:
-                    self.training.append(sample)
+                    train = TrainingKnownSample.from_dict(raw_sample)
+                    self.training.append(train)
+                good_count += 1
             except InvalidSampleError as exc:
                 print(f"Invalid sample found in row {n + 1}: {exc}")
                 bad_count += 1

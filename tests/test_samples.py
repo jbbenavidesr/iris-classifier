@@ -1,4 +1,4 @@
-from iris_classifier.samples import Sample, KnownSample
+from iris_classifier.samples import Sample, KnownSample, UnknownSample
 
 
 def test_sample_init() -> None:
@@ -100,3 +100,24 @@ def test_matches_of_uncorrectly_classified_sample() -> None:
     sample = KnownSample(1.0, 2.0, 3.0, 4.0, "Iris-setosa")
     sample.classify("Iris-versicolor")
     assert not sample.matches()
+
+
+def test_unknown_sample_init() -> None:
+    """Test the initialization of an unknown sample."""
+    sample = UnknownSample(1.0, 2.0, 3.0, 4.0)
+    assert sample.sepal_length == 1.0
+    assert sample.sepal_width == 2.0
+    assert sample.petal_length == 3.0
+    assert sample.petal_width == 4.0
+
+
+def test_unknown_sample_repr() -> None:
+    """Test the repr of an unknown sample."""
+    sample = UnknownSample(1.0, 2.0, 3.0, 4.0)
+    assert repr(sample) == (
+        "UnknownSample("
+        "sepal_length=1.0, "
+        "sepal_width=2.0, "
+        "petal_length=3.0, "
+        "petal_width=4.0)"
+    )

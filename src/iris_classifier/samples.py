@@ -90,3 +90,10 @@ class KnownSample(Sample):
         :return: True if the classification matches the spicies, False otherwise.
         """
         return self.species == self.classification
+
+
+class UnknownSample(Sample):
+    """A sample of an iris flower with an unknown spicies."""
+
+    def __repr__(self) -> str:
+        return super().__repr__().replace("Sample", "UnknownSample")

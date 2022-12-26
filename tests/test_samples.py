@@ -1,4 +1,4 @@
-from iris_classifier.samples import Sample, KnownSample, UnknownSample
+from iris_classifier.samples import KnownSample, Sample, UnknownSample
 
 
 def test_sample_init() -> None:

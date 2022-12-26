@@ -13,8 +13,8 @@ from typing import TYPE_CHECKING, Iterable
 if TYPE_CHECKING:
     from .hyperparameters import Hyperparameter
 
-from .samples import TestingKnownSample, TrainingKnownSample, Sample
 from .exceptions import InvalidSampleError
+from .samples import Sample, TestingKnownSample, TrainingKnownSample
 
 
 class TrainingData:

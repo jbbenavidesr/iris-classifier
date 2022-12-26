@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from typing import Optional, cast
 from enum import Enum
+from typing import Optional, cast
 
-from .exceptions import InvalidSampleError
+from .exceptions import InvalidSampleError, OutOfBoundsError
 
 
 class Species(str, Enum):
@@ -65,7 +65,7 @@ class Sample:
         :param sample: The sample as a dictionary.
         """
         try:
-            return cls(
+            sample = cls(
                 float(row["sepal_length"]),
                 float(row["sepal_width"]),
                 float(row["petal_length"]),
@@ -75,6 +75,17 @@ class Sample:
             raise InvalidSampleError(f"Invalid sample in row: {row!r}.")
         except KeyError:
             raise InvalidSampleError(f"Missing column in row: {row!r}")
+        else:
+            if (
+                sample.sepal_length < 0
+                or sample.sepal_width < 0
+                or sample.petal_length < 0
+                or sample.petal_width < 0
+            ):
+                raise OutOfBoundsError(
+                    f"Sample attributes out of bounds in row: {row!r}."
+                )
+            return sample
 
 
 class KnownSample(Sample):

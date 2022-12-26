@@ -1,12 +1,12 @@
 import pytest
 
-from iris_classifier.exceptions import InvalidSampleError
+from iris_classifier.exceptions import InvalidSampleError, OutOfBoundsError
 from iris_classifier.samples import (
     KnownSample,
     Sample,
-    UnknownSample,
     TestingKnownSample,
     TrainingKnownSample,
+    UnknownSample,
 )
 
 
@@ -64,6 +64,19 @@ def test_sample_from_dict_invalid() -> None:
                 "sepal_width": "2.0",
                 "petal_length": "3.0",
                 "petal_width": "invalid",
+            }
+        )
+
+
+def test_sample_from_dict_out_of_bounds() -> None:
+    """Test the creation of a sample from a dictionary with out of bounds values."""
+    with pytest.raises(OutOfBoundsError):
+        Sample.from_dict(
+            {
+                "sepal_length": "1.0",
+                "sepal_width": "2.0",
+                "petal_length": "3.0",
+                "petal_width": "-3.0",
             }
         )
 
@@ -152,6 +165,20 @@ def test_known_sample_from_dict_raises_error_on_wrong_species() -> None:
         )
 
     assert str(excinfo.value).startswith("Invalid sample in row:")
+
+
+def test_known_sample_from_dict_out_of_bounds() -> None:
+    """Test the creation of a known sample from a dict."""
+    with pytest.raises(OutOfBoundsError):
+        KnownSample.from_dict(
+            {
+                "sepal_length": "1.0",
+                "sepal_width": "2.0",
+                "petal_length": "3.0",
+                "petal_width": "-3.0",
+                "species": "Iris-setosa",
+            }
+        )
 
 
 def test_known_sample_from_dict_raises_error_on_invalid_floats() -> None:
@@ -301,3 +328,16 @@ def test_unknown_sample_from_dict_invalid() -> None:
         )
 
     assert str(excinfo.value).startswith("Invalid sample in row:")
+
+
+def test_unknown_sample_from_dict_with_out_of_bound_data() -> None:
+    """Test the creation of an unknown sample from a dict."""
+    with pytest.raises(OutOfBoundsError):
+        UnknownSample.from_dict(
+            {
+                "sepal_length": "-1.0",
+                "sepal_width": "2.0",
+                "petal_length": "3.0",
+                "petal_width": "4.0",
+            }
+        )

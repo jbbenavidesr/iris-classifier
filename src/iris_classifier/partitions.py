@@ -10,7 +10,7 @@ from .samples import SampleDict, TestingKnownSample, TrainingKnownSample
 
 class SamplePartition(List[SampleDict], abc.ABC):
     @overload
-    def __init__(self, *, training_subset: float = 0.8) -> None:
+    def __init__(self, *, training_subset: tuple[int, int] = (8, 10)) -> None:
         ...
 
     @overload
@@ -18,7 +18,7 @@ class SamplePartition(List[SampleDict], abc.ABC):
         self,
         iterable: Iterable[SampleDict] | None = None,
         *,
-        training_subset: float = 0.8,
+        training_subset: tuple[int, int] = (8, 10),
     ) -> None:
         ...
 
@@ -26,7 +26,7 @@ class SamplePartition(List[SampleDict], abc.ABC):
         self,
         iterable: Iterable[SampleDict] | None = None,
         *,
-        training_subset: float = 0.8,
+        training_subset: tuple[int, int] = (8, 10),
     ) -> None:
         self.training_subset = training_subset
         if iterable is not None:
@@ -52,7 +52,7 @@ class ShufflingSamplePartition(SamplePartition):
         self,
         iterable: Iterable[SampleDict] | None = None,
         *,
-        training_subset: float = 0.8,
+        training_subset: tuple[int, int] = (8, 10),
     ) -> None:
         super().__init__(iterable, training_subset=training_subset)
         self.split: int | None = None
@@ -60,7 +60,8 @@ class ShufflingSamplePartition(SamplePartition):
     def shuffle(self) -> None:
         if not self.split:
             random.shuffle(self)
-            self.split = int(len(self) * self.training_subset)
+            n, d = self.training_subset
+            self.split = int(len(self) * n / d)
 
     @property
     def training(self) -> list[TrainingKnownSample]:
@@ -100,3 +101,38 @@ class DealingPartition(abc.ABC):
     @abc.abstractmethod
     def testing(self) -> list[TestingKnownSample]:
         ...
+
+
+class CountingDealingPartition(DealingPartition):
+    def __init__(
+        self,
+        items: Iterable[SampleDict] | None = None,
+        *,
+        training_subset: tuple[int, int] = (8, 10),
+    ) -> None:
+        self.training_subset = training_subset
+        self.counter = 0
+        self._training: list[TrainingKnownSample] = []
+        self._testing: list[TestingKnownSample] = []
+        if items is not None:
+            self.extend(items)
+
+    def extend(self, items: Iterable[SampleDict]) -> None:
+        for item in items:
+            self.append(item)
+
+    def append(self, item: SampleDict) -> None:
+        n, d = self.training_subset
+        if self.counter % d < n:
+            self._training.append(TrainingKnownSample(**item))
+        else:
+            self._testing.append(TestingKnownSample(**item))
+        self.counter += 1
+
+    @property
+    def training(self) -> list[TrainingKnownSample]:
+        return self._training
+
+    @property
+    def testing(self) -> list[TestingKnownSample]:
+        return self._testing

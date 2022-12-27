@@ -47,7 +47,7 @@ class TrainingData:
         :return: The number of samples loaded and the number of invalid samples.
         """
         partition_class = self.partition_class
-        partition = partition_class(raw_data_source, training_subset=0.9)
+        partition = partition_class(raw_data_source, training_subset=(9, 10))
         self.training = partition.training
         self.testing = partition.testing
         self.uploaded = datetime.datetime.now(tz=datetime.timezone.utc)

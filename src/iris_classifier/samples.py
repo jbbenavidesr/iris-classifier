@@ -19,7 +19,7 @@ class Purpose(enum.IntEnum):
 
 
 class Sample:
-    """A sample of an iris flower."""
+    """A sample of an iris flower. Base class used for all types of samples"""
 
     def __init__(
         self,
@@ -42,14 +42,32 @@ class Sample:
         self.petal_length = petal_length
         self.petal_width = petal_width
 
-    def __repr__(self) -> str:
-        return (
-            f"Sample("
-            f"sepal_length={self.sepal_length}, "
-            f"sepal_width={self.sepal_width}, "
-            f"petal_length={self.petal_length}, "
-            f"petal_width={self.petal_width})"
+    def __eq__(self, other: object) -> bool:
+        if type(other) != type(self):
+            return False
+        other = cast(Sample, other)
+        return all(
+            [
+                self.sepal_length == other.sepal_length,
+                self.sepal_width == other.sepal_width,
+                self.petal_length == other.petal_length,
+                self.petal_width == other.petal_width,
+            ]
         )
+
+    @property
+    def attr_dict(self) -> dict[str, str]:
+        return dict(
+            sepal_length=f"{self.sepal_length!r}",
+            sepal_width=f"{self.sepal_width!r}",
+            petal_length=f"{self.petal_length!r}",
+            petal_width=f"{self.petal_width!r}",
+        )
+
+    def __repr__(self) -> str:
+        base_attributes = self.attr_dict
+        attrs = ", ".join(f"{k}={v}" for k, v in base_attributes.items())
+        return f"{self.__class__.__name__}({attrs})"
 
     @classmethod
     def from_dict(cls, row: dict[str, str]) -> Sample:
@@ -110,6 +128,13 @@ class KnownSample(Sample):
         self.purpose = purpose_enum
         self._classification: Species | None = None
 
+    def matches(self) -> bool:
+        """Check if the classification matches the spicies.
+
+        :return: True if the classification matches the spicies, False otherwise.
+        """
+        return self.species == self.classification
+
     @property
     def classification(self) -> Species | None:
         if self.purpose == Purpose.TESTING:
@@ -125,32 +150,13 @@ class KnownSample(Sample):
             raise AttributeError("classification is only available for testing samples")
 
     def __repr__(self) -> str:
-        if self.purpose == Purpose.TESTING:
-            name = "TestingKnownSample"
-
-            if self.classification is None:
-                classification = ""
-            else:
-                classification = f", classification={self.classification}"
-        else:
-            name = "TrainingKnownSample"
-            classification = ""
-
-        return (
-            f"{name}("
-            f"sepal_length={self.sepal_length}, "
-            f"sepal_width={self.sepal_width}, "
-            f"petal_length={self.petal_length}, "
-            f"petal_width={self.petal_width}, "
-            f"species={self.species}{classification})"
-        )
-
-    def matches(self) -> bool:
-        """Check if the classification matches the spicies.
-
-        :return: True if the classification matches the spicies, False otherwise.
-        """
-        return self.species == self.classification
+        base_attributes = self.attr_dict
+        base_attributes["purpose"] = f"{self.purpose.value}"
+        base_attributes["species"] = f"{self.species.value}"
+        if self.purpose == Purpose.TESTING and self._classification:
+            base_attributes["classification"] = f"{self._classification.value}"
+        attrs = ", ".join(f"{k}={v}" for k, v in base_attributes.items())
+        return f"{self.__class__.__name__}({attrs})"
 
     @classmethod
     def from_dict(cls, row: dict[str, str], purpose: Purpose | int) -> KnownSample:
@@ -176,8 +182,29 @@ class KnownSample(Sample):
 class UnknownSample(Sample):
     """A sample of an iris flower with an unknown spicies."""
 
+    def __init__(
+        self,
+        sepal_length: float,
+        sepal_width: float,
+        petal_length: float,
+        petal_width: float,
+    ) -> None:
+        super().__init__(sepal_length, sepal_width, petal_length, petal_width)
+        self._classification: Species | None = None
+
+    @property
+    def classification(self) -> Species | None:
+        return self._classification
+
+    @classification.setter
+    def classification(self, value: Species | str) -> None:
+        self._classification = Species(value)
+
     def __repr__(self) -> str:
-        return super().__repr__().replace("Sample", "UnknownSample")
+        base_attributes = self.attr_dict
+        base_attributes["classification"] = f"{self.classification!r}"
+        attrs = ", ".join(f"{k}={v}" for k, v in base_attributes.items())
+        return f"{self.__class__.__name__}({attrs})"
 
     @classmethod
     def from_dict(cls, row: dict[str, str]) -> UnknownSample:

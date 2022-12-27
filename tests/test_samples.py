@@ -104,11 +104,12 @@ def test_training_known_sample_repr() -> None:
     """Test the repr of a training known sample."""
     sample = KnownSample(1.0, 2.0, 3.0, 4.0, Purpose.TRAINING.value, "Iris-setosa")
     assert repr(sample) == (
-        "TrainingKnownSample("
+        "KnownSample("
         "sepal_length=1.0, "
         "sepal_width=2.0, "
         "petal_length=3.0, "
         "petal_width=4.0, "
+        f"purpose={Purpose.TRAINING.value}, "
         "species=Iris-setosa)"
     )
 
@@ -139,11 +140,12 @@ def test_testing_known_sample_unclassified_repr() -> None:
     """Test the repr of an unclassified known sample."""
     sample = KnownSample(1.0, 2.0, 3.0, 4.0, Purpose.TESTING.value, "Iris-setosa")
     assert repr(sample) == (
-        "TestingKnownSample("
+        "KnownSample("
         "sepal_length=1.0, "
         "sepal_width=2.0, "
         "petal_length=3.0, "
         "petal_width=4.0, "
+        f"purpose={Purpose.TESTING.value}, "
         "species=Iris-setosa)"
     )
 
@@ -153,11 +155,12 @@ def test_testing_known_sample_classified_repr() -> None:
     sample = KnownSample(1.0, 2.0, 3.0, 4.0, Purpose.TESTING.value, "Iris-setosa")
     sample.classification = "Iris-setosa"
     assert repr(sample) == (
-        "TestingKnownSample("
+        "KnownSample("
         "sepal_length=1.0, "
         "sepal_width=2.0, "
         "petal_length=3.0, "
         "petal_width=4.0, "
+        f"purpose={Purpose.TESTING.value}, "
         "species=Iris-setosa, "
         "classification=Iris-setosa)"
     )
@@ -306,5 +309,6 @@ def test_unknown_sample_repr() -> None:
         "sepal_length=1.0, "
         "sepal_width=2.0, "
         "petal_length=3.0, "
-        "petal_width=4.0)"
+        "petal_width=4.0, "
+        "classification=None)"
     )

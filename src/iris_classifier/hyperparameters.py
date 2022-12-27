@@ -83,30 +83,32 @@ class Distance:
         raise NotImplementedError
 
 
-class ED(Distance):
-    """Euclidean distance."""
+class MinkowskiDistance(Distance):
+    """Minkowski distance."""
 
-    def distance(self, a: Sample, b: Sample) -> float:
-        return math.hypot(
-            a.sepal_length - b.sepal_length,
-            a.sepal_width - b.sepal_width,
-            a.petal_length - b.petal_length,
-            a.petal_width - b.petal_width,
-        )
-
-
-class MD(Distance):
-    """Manhattan distance."""
+    p: int
 
     def distance(self, a: Sample, b: Sample) -> float:
         return sum(
             [
-                abs(a.sepal_length - b.sepal_length),
-                abs(a.sepal_width - b.sepal_width),
-                abs(a.petal_length - b.petal_length),
-                abs(a.petal_width - b.petal_width),
+                abs(a.sepal_length - b.sepal_length) ** self.p,
+                abs(a.sepal_width - b.sepal_width) ** self.p,
+                abs(a.petal_length - b.petal_length) ** self.p,
+                abs(a.petal_width - b.petal_width) ** self.p,
             ]
-        )
+        ) ** (1 / self.p)
+
+
+class ED(MinkowskiDistance):
+    """Euclidean distance."""
+
+    p = 2
+
+
+class MD(MinkowskiDistance):
+    """Manhattan distance."""
+
+    p = 1
 
 
 class CD(Distance):

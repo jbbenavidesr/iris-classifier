@@ -139,7 +139,7 @@ def test_matches_of_correctly_classified_sample() -> None:
 def test_matches_of_uncorrectly_classified_sample() -> None:
     """Test the matching of a sample."""
     sample = KnownSample(1.0, 2.0, 3.0, 4.0, Purpose.TESTING, "Iris-setosa")
-    sample.classification = Species.SETOSA
+    sample.classification = Species.VERSICOLOR
     assert not sample.matches()
 
 

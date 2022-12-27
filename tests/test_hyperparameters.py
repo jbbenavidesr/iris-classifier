@@ -23,7 +23,7 @@ def test_hyperparameter_init(training_data: TrainingData) -> None:
 def test_hyperparameter_classify(training_data: TrainingData) -> None:
     distance = ED()
     hyperparameter = Hyperparameter(3, distance, training_data)
-    assert hyperparameter.classify(training_data.training[0]) == "Iris-virginica"
+    assert hyperparameter.classify(training_data.training[0]) == "Iris-versicolor"
 
 
 def test_hyperparameter_test(training_data: TrainingData) -> None:

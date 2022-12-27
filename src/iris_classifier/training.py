@@ -8,12 +8,14 @@ will select the hyperparameters used by the model.
 from __future__ import annotations
 
 import datetime
+import random
 from typing import TYPE_CHECKING, Iterable
 
 if TYPE_CHECKING:
     from .hyperparameters import Hyperparameter
 
-from .samples import KnownSample, Purpose, Sample, Species
+from .abstracts import SamplePartition
+from .samples import KnownSample, Purpose, Sample, Species, SampleDict
 
 
 class TrainingData:
@@ -32,34 +34,19 @@ class TrainingData:
         self.testing: list[KnownSample] = []
         self.tuning: list[Hyperparameter] = []
 
-    def load(self, raw_data_source: Iterable[dict[str, str]]) -> tuple[int, int]:
+    def load(
+        self, raw_data_source: Iterable[SampleDict], partition: SamplePartition
+    ) -> None:
         """Load the raw data source and partition it into training and testing data.
 
         :return: The number of samples loaded and the number of invalid samples.
         """
-        bad_count = 0
-        good_count = 0
-        for n, raw_sample in enumerate(raw_data_source):
-            purpose = Purpose.TRAINING if n % 10 else Purpose.TESTING
-            try:
-                sample = KnownSample(
-                    sepal_length=float(raw_sample["sepal_length"]),
-                    sepal_width=float(raw_sample["sepal_width"]),
-                    petal_length=float(raw_sample["petal_length"]),
-                    petal_width=float(raw_sample["petal_width"]),
-                    species=Species(raw_sample["species"]),
-                    purpose=purpose,
-                )
-                if sample.purpose == Purpose.TRAINING:
-                    self.training.append(sample)
-                else:
-                    self.testing.append(sample)
-                good_count += 1
-            except ValueError as exc:
-                print(f"Invalid sample found in row {n + 1}: {exc}")
-                bad_count += 1
+        for sample in raw_data_source:
+            partition.append(sample)
+
+        self.training = partition.training
+        self.testing = partition.testing
         self.uploaded = datetime.datetime.now(tz=datetime.timezone.utc)
-        return good_count, bad_count
 
     def test(self, parameter: Hyperparameter) -> None:
         """Test the hyperparameter set.
@@ -80,3 +67,37 @@ class TrainingData:
         classification = parameter.classify(sample)
         sample.classification = classification
         return sample
+
+
+class ShufflingSamplePartition(SamplePartition):
+    """Implementation of partition that shuffles the list and cuts it."""
+
+    def __init__(
+        self,
+        iterable: Iterable[SampleDict] | None = None,
+        *,
+        training_subset: float = 0.8,
+    ) -> None:
+        super().__init__(iterable, training_subset=training_subset)
+        self.split: int | None = None
+
+    def shuffle(self) -> None:
+        if not self.split:
+            random.shuffle(self)
+            self.split = int(len(self) * self.training_subset)
+
+    @property
+    def training(self) -> list[KnownSample]:
+        self.shuffle()
+        return [
+            KnownSample(**sample, purpose=Purpose.TRAINING)
+            for sample in self[: self.split]
+        ]
+
+    @property
+    def testing(self) -> list[KnownSample]:
+        self.shuffle()
+        return [
+            KnownSample(**sample, purpose=Purpose.TESTING)
+            for sample in self[self.split :]
+        ]

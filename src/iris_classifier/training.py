@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Iterable
 if TYPE_CHECKING:
     from .hyperparameters import Hyperparameter
 
-from .partitions import ShufflingSamplePartition
+from .partitions import CountingDealingPartition
 from .samples import (
     ClassifiedSample,
     SampleDict,
@@ -27,7 +27,7 @@ class TrainingData:
     """Set of training  and testing data used to train the model. It has methods to load
     and test the samples."""
 
-    partition_class = ShufflingSamplePartition
+    partition_class = CountingDealingPartition
 
     def __init__(self, name: str) -> None:
         """Initialize the training data.

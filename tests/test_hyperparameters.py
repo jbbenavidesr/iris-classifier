@@ -7,21 +7,27 @@ import pytest
 if TYPE_CHECKING:
     from iris_classifier.training import TrainingData
 
-from iris_classifier.hyperparameters import CD, ED, MD, SD, Distance, Hyperparameter
+from iris_classifier.distances import (
+    EuclidianDistance,
+    ManhattanDistance,
+    SorensenDistance,
+    ChebyshevDistance,
+)
+from iris_classifier.hyperparameters import Hyperparameter
 from iris_classifier.samples import Sample
 
 
 def test_hyperparameter_init(training_data: TrainingData) -> None:
     """Test the initialization of a hyperparameter."""
-    distance = ED()
+    distance = EuclidianDistance()
     hyperparameter = Hyperparameter(3, distance, training_data)
     assert hyperparameter.k == 3
-    assert hyperparameter.distance == distance
+    assert hyperparameter.algorithm == distance
     assert hyperparameter.data() == training_data
 
 
 def test_hyperparameter_classify(training_data: TrainingData) -> None:
-    distance = ED()
+    distance = EuclidianDistance()
     hyperparameter = Hyperparameter(3, distance, training_data)
     assert hyperparameter.classify(training_data.training[0]) == "Iris-virginica"
 
@@ -29,24 +35,15 @@ def test_hyperparameter_classify(training_data: TrainingData) -> None:
 def test_hyperparameter_test(training_data: TrainingData) -> None:
     """Test the testing of a hyperparameter."""
 
-    distance = ED()
+    distance = EuclidianDistance()
     hyperparameter = Hyperparameter(3, distance, training_data)
     hyperparameter.test()
     assert hyperparameter.quality == 0.4
 
 
-def test_distance_class_throws_not_implemented_error() -> None:
-    """Test that the Distance class throws a NotImplementedError."""
-    distance = Distance()
-    sample_a = Sample(1, 2, 3, 4)
-    sample_b = Sample(5, 6, 7, 8)
-    with pytest.raises(NotImplementedError):
-        distance.distance(sample_a, sample_b)
-
-
 def test_euclidean_distance() -> None:
     """Test the euclidean distance."""
-    ed = ED()
+    ed = EuclidianDistance()
     sample_a = Sample(1, 2, 3, 4)
     sample_b = Sample(5, 6, 7, 8)
     assert ed.distance(sample_a, sample_b) == 8
@@ -54,7 +51,7 @@ def test_euclidean_distance() -> None:
 
 def test_manhattan_distance() -> None:
     """Test the manhattan distance."""
-    md = MD()
+    md = ManhattanDistance()
     sample_a = Sample(1, 2, 3, 4)
     sample_b = Sample(5, 6, 7, 8)
     assert md.distance(sample_a, sample_b) == 16
@@ -62,7 +59,7 @@ def test_manhattan_distance() -> None:
 
 def test_chebyshev_distance() -> None:
     """Test the chebyshev distance."""
-    cd = CD()
+    cd = ChebyshevDistance()
     sample_a = Sample(1, 2, 3, 4)
     sample_b = Sample(5, 6, 7, 8)
     assert cd.distance(sample_a, sample_b) == 4
@@ -70,7 +67,7 @@ def test_chebyshev_distance() -> None:
 
 def test_sorensen_distance() -> None:
     """Test the sorensen distance."""
-    sd = SD()
+    sd = SorensenDistance()
     sample_a = Sample(1, 2, 3, 4)
     sample_b = Sample(5, 6, 7, 8)
     assert sd.distance(sample_a, sample_b) == 0.4444444444444444

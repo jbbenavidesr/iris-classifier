@@ -16,6 +16,14 @@ class Purpose(enum.IntEnum):
     TRAINING = 2
 
 
+class SampleDict(TypedDict):
+    sepal_length: float
+    sepal_width: float
+    petal_length: float
+    petal_width: float
+    species: str
+
+
 class Sample:
     """A sample of an iris flower. Base class used for all types of samples"""
 

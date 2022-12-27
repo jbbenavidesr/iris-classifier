@@ -1,7 +1,6 @@
 """Hyperparameter sets for the model."""
 from __future__ import annotations
 
-import math
 import weakref
 from typing import Optional
 

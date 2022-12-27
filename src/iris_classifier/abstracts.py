@@ -1,7 +1,7 @@
 """Abstract classes for IrisClassifier."""
 from __future__ import annotations
 
-from typing import List, TypedDict, overload, Iterable
+from typing import List, overload, Iterable
 import abc
 
 from .samples import KnownSample, SampleDict

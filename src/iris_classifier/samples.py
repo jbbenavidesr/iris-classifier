@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import enum
-from typing import cast
+from typing import cast, TypedDict
 
 
 class Species(str, enum.Enum):

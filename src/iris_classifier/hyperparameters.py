@@ -2,9 +2,10 @@
 from __future__ import annotations
 
 import weakref
+from collections import Counter
 from typing import Optional
 
-from .samples import KnownSample, Sample, Species
+from .samples import Sample, Species, TrainingKnownSample
 from .training import TrainingData
 
 
@@ -53,20 +54,18 @@ class Hyperparameter:
                 "Training data is not available anymore. Broken Weak Reference."
             )
 
-        distances: list[tuple[float, KnownSample]] = []
-
-        for training_sample in training_data.training:
-            distances.append(
+        distances: list[tuple[float, TrainingKnownSample]] = sorted(
+            [
                 (self.distance.distance(sample, training_sample), training_sample)
-            )
-
-        distances.sort(key=lambda x: x[0])
-
-        votes: dict[Species, int] = {}
-        for i in range(self.k):
-            votes[distances[i][1].species] = votes.get(distances[i][1].species, 0) + 1
-
-        return max(votes, key=lambda x: votes[x])
+                for training_sample in training_data.training
+            ],
+            key=lambda x: x[0],
+        )
+        k_nearest_species = (known.species for d, known in distances[: self.k])
+        frequencies: Counter[Species] = Counter(k_nearest_species)
+        best_fit, *_ = frequencies.most_common()
+        species, _ = best_fit
+        return species
 
 
 class Distance:

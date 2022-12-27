@@ -8,19 +8,26 @@ will select the hyperparameters used by the model.
 from __future__ import annotations
 
 import datetime
-import random
 from typing import TYPE_CHECKING, Iterable
 
 if TYPE_CHECKING:
     from .hyperparameters import Hyperparameter
 
-from .abstracts import SamplePartition
-from .samples import KnownSample, Purpose, Sample, Species, SampleDict
+from .partitions import ShufflingSamplePartition
+from .samples import (
+    ClassifiedSample,
+    SampleDict,
+    TestingKnownSample,
+    TrainingKnownSample,
+    UnknownSample,
+)
 
 
 class TrainingData:
     """Set of training  and testing data used to train the model. It has methods to load
     and test the samples."""
+
+    partition_class = ShufflingSamplePartition
 
     def __init__(self, name: str) -> None:
         """Initialize the training data.
@@ -30,20 +37,17 @@ class TrainingData:
         self.name = name
         self.uploaded: datetime.datetime
         self.tested: datetime.datetime
-        self.training: list[KnownSample] = []
-        self.testing: list[KnownSample] = []
+        self.training: list[TrainingKnownSample] = []
+        self.testing: list[TestingKnownSample] = []
         self.tuning: list[Hyperparameter] = []
 
-    def load(
-        self, raw_data_source: Iterable[SampleDict], partition: SamplePartition
-    ) -> None:
+    def load(self, raw_data_source: Iterable[SampleDict]) -> None:
         """Load the raw data source and partition it into training and testing data.
 
         :return: The number of samples loaded and the number of invalid samples.
         """
-        for sample in raw_data_source:
-            partition.append(sample)
-
+        partition_class = self.partition_class
+        partition = partition_class(raw_data_source, training_subset=0.9)
         self.training = partition.training
         self.testing = partition.testing
         self.uploaded = datetime.datetime.now(tz=datetime.timezone.utc)
@@ -57,7 +61,9 @@ class TrainingData:
         self.tuning.append(parameter)
         self.tested = datetime.datetime.now(tz=datetime.timezone.utc)
 
-    def classify(self, parameter: Hyperparameter, sample: Sample) -> Sample:
+    def classify(
+        self, parameter: Hyperparameter, sample: UnknownSample
+    ) -> ClassifiedSample:
         """Classify a sample.
 
         :param sample: The sample to classify.
@@ -65,39 +71,4 @@ class TrainingData:
         :return: The classified sample.
         """
         classification = parameter.classify(sample)
-        sample.classification = classification
-        return sample
-
-
-class ShufflingSamplePartition(SamplePartition):
-    """Implementation of partition that shuffles the list and cuts it."""
-
-    def __init__(
-        self,
-        iterable: Iterable[SampleDict] | None = None,
-        *,
-        training_subset: float = 0.8,
-    ) -> None:
-        super().__init__(iterable, training_subset=training_subset)
-        self.split: int | None = None
-
-    def shuffle(self) -> None:
-        if not self.split:
-            random.shuffle(self)
-            self.split = int(len(self) * self.training_subset)
-
-    @property
-    def training(self) -> list[KnownSample]:
-        self.shuffle()
-        return [
-            KnownSample(**sample, purpose=Purpose.TRAINING)
-            for sample in self[: self.split]
-        ]
-
-    @property
-    def testing(self) -> list[KnownSample]:
-        self.shuffle()
-        return [
-            KnownSample(**sample, purpose=Purpose.TESTING)
-            for sample in self[self.split :]
-        ]
+        return ClassifiedSample(classification, sample)

@@ -1,5 +1,6 @@
 from iris_classifier.hyperparameters import Hyperparameter
-from iris_classifier.training import TrainingData, ShufflingSamplePartition
+from iris_classifier.samples import ClassifiedSample, UnknownSample
+from iris_classifier.training import TrainingData
 
 from .mock_data import training_data as mock_training_data
 
@@ -16,9 +17,7 @@ def test_training_data_init() -> None:
 def test_training_data_load() -> None:
     """Test the loading of a training data."""
     training_data = TrainingData("Test training data")
-    training_data.load(
-        mock_training_data, ShufflingSamplePartition(training_subset=0.9)
-    )
+    training_data.load(mock_training_data)
     assert len(training_data.training) == 45
     assert len(training_data.testing) == 5
     assert training_data.uploaded is not None
@@ -40,34 +39,8 @@ def test_training_data_classify(
     training_data: TrainingData, hyperparameter: Hyperparameter
 ) -> None:
     """Test the classification of a training data."""
-    sample = training_data.classify(hyperparameter, training_data.testing[0])
+    unknown_sample = UnknownSample(1.0, 2.0, 3.0, 4.0)
+    sample = training_data.classify(hyperparameter, unknown_sample)
 
+    assert isinstance(sample, ClassifiedSample)
     assert sample.classification == "Iris-virginica"
-
-
-def test_shuffling_sample_partition_empty_init() -> None:
-    """Test the initialization of a shuffling sample partition."""
-    partition = ShufflingSamplePartition()
-    assert partition.training == []
-    assert partition.testing == []
-
-
-def test_shuffling_sample_partition_init_with_iterable() -> None:
-    """Test the loading of a shuffling sample partition."""
-    partition = ShufflingSamplePartition(mock_training_data)
-    assert len(partition.training) == 40
-    assert len(partition.testing) == 10
-
-
-def test_shuffling_sample_partition_training_subset_proportion() -> None:
-    """Test the training subset proportion of a shuffling sample partition."""
-    partition = ShufflingSamplePartition(mock_training_data, training_subset=0.9)
-    assert len(partition.training) == 45
-    assert len(partition.testing) == 5
-
-
-def test_shuffling_sample_partition_training_subset_proportion_2() -> None:
-    """Test the training subset proportion of a shuffling sample partition."""
-    partition = ShufflingSamplePartition(mock_training_data, training_subset=0.5)
-    assert len(partition.training) == 25
-    assert len(partition.testing) == 25

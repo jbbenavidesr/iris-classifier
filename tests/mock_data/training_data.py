@@ -1,7 +1,7 @@
 # 50 samples of Iris data
 from iris_classifier.samples import SampleDict
 
-training_data: SampleDict = [
+training_data: list[SampleDict] = [
     {
         "sepal_length": 5.1,
         "sepal_width": 3.5,

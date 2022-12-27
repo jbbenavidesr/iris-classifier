@@ -3,8 +3,6 @@ from __future__ import annotations
 import enum
 from typing import cast
 
-from .exceptions import InvalidSampleError, OutOfBoundsError
-
 
 class Species(str, enum.Enum):
     SETOSA = "Iris-setosa"
@@ -42,6 +40,16 @@ class Sample:
         self.petal_length = petal_length
         self.petal_width = petal_width
 
+    @property
+    def classification(self) -> Species | None:
+        """Return the classification of the sample."""
+        raise NotImplementedError
+
+    @classification.setter
+    def classification(self, value: Species | str) -> None:
+        """Set the classification of the sample."""
+        raise NotImplementedError
+
     def __eq__(self, other: object) -> bool:
         if type(other) != type(self):
             return False
@@ -68,35 +76,6 @@ class Sample:
         base_attributes = self.attr_dict
         attrs = ", ".join(f"{k}={v}" for k, v in base_attributes.items())
         return f"{self.__class__.__name__}({attrs})"
-
-    @classmethod
-    def from_dict(cls, row: dict[str, str]) -> Sample:
-        """Create a sample from a dictionary.
-
-        :param sample: The sample as a dictionary.
-        """
-        try:
-            sample = cls(
-                float(row["sepal_length"]),
-                float(row["sepal_width"]),
-                float(row["petal_length"]),
-                float(row["petal_width"]),
-            )
-        except ValueError:
-            raise InvalidSampleError(f"Invalid sample in row: {row!r}.")
-        except KeyError:
-            raise InvalidSampleError(f"Missing column in row: {row!r}")
-        else:
-            if (
-                sample.sepal_length < 0
-                or sample.sepal_width < 0
-                or sample.petal_length < 0
-                or sample.petal_width < 0
-            ):
-                raise OutOfBoundsError(
-                    f"Sample attributes out of bounds in row: {row!r}."
-                )
-            return sample
 
 
 class KnownSample(Sample):
@@ -158,26 +137,6 @@ class KnownSample(Sample):
         attrs = ", ".join(f"{k}={v}" for k, v in base_attributes.items())
         return f"{self.__class__.__name__}({attrs})"
 
-    @classmethod
-    def from_dict(cls, row: dict[str, str], purpose: Purpose | int) -> KnownSample:
-        """Create a KnownSample from a dictionary."""
-
-        sample = Sample.from_dict(row)
-
-        try:
-            return cls(
-                sepal_length=sample.sepal_length,
-                sepal_width=sample.sepal_width,
-                petal_length=sample.petal_length,
-                petal_width=sample.petal_width,
-                purpose=purpose,
-                species=Species(row["species"]),
-            )
-        except ValueError:
-            raise InvalidSampleError(f"Invalid sample in row: {row!r}")
-        except KeyError:
-            raise InvalidSampleError(f"Missing column in row: {row!r}")
-
 
 class UnknownSample(Sample):
     """A sample of an iris flower with an unknown spicies."""
@@ -205,7 +164,3 @@ class UnknownSample(Sample):
         base_attributes["classification"] = f"{self.classification!r}"
         attrs = ", ".join(f"{k}={v}" for k, v in base_attributes.items())
         return f"{self.__class__.__name__}({attrs})"
-
-    @classmethod
-    def from_dict(cls, row: dict[str, str]) -> UnknownSample:
-        return cast(UnknownSample, super().from_dict(row))

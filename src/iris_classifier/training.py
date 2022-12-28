@@ -15,11 +15,9 @@ if TYPE_CHECKING:
 
 from .partitions import CountingDealingPartition
 from .samples import (
-    ClassifiedSample,
     SampleDict,
     TestingKnownSample,
     TrainingKnownSample,
-    UnknownSample,
 )
 
 
@@ -60,21 +58,3 @@ class TrainingData:
         parameter.test()
         self.tuning.append(parameter)
         self.tested = datetime.datetime.now(tz=datetime.timezone.utc)
-
-    def classify(
-        self, parameter: Hyperparameter, sample: UnknownSample
-    ) -> ClassifiedSample:
-        """Classify a sample.
-
-        :param sample: The sample to classify.
-        :param parameter: The hyperparameter set to use.
-        :return: The classified sample.
-        """
-        classification = parameter.classify(sample)
-        return ClassifiedSample(
-            sepal_length=sample.sepal_length,
-            sepal_width=sample.sepal_width,
-            petal_length=sample.petal_length,
-            petal_width=sample.petal_width,
-            classification=classification,
-        )

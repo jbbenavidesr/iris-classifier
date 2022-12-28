@@ -12,7 +12,7 @@ class SampleDict(TypedDict):
     species: str
 
 
-@dataclass
+@dataclass(frozen=True)
 class Sample:
     """A sample of an iris flower. Base class used for all types of samples"""
 
@@ -22,45 +22,40 @@ class Sample:
     petal_width: float
 
 
-@dataclass
+@dataclass(frozen=True)
 class KnownSample(Sample):
     """A sample of an iris flower with a known spicies."""
 
     species: str
 
 
-@dataclass
-class TrainingKnownSample(KnownSample):
+@dataclass(frozen=True)
+class TrainingKnownSample:
     """A sample of an iris flower with a known spicies used for training the model."""
 
-    pass
+    sample: KnownSample
 
 
 @dataclass
-class TestingKnownSample(KnownSample):
+class TestingKnownSample:
     """A sample of an iris flower with a known spicies used for testing the model."""
 
-    __test__ = False
-
+    sample: KnownSample
     classification: str | None = None
+
+    __test__ = False
 
     def matches(self) -> bool:
         """Check if the classification matches the spicies.
 
         :return: True if the classification matches the spicies, False otherwise.
         """
-        return self.species == self.classification
+        return self.sample.species == self.classification
 
 
 @dataclass
-class UnknownSample(Sample):
+class UnknownSample:
     """A sample of an iris flower with an unknown spicies."""
 
-    pass
-
-
-@dataclass
-class ClassifiedSample(Sample):
-    """Created from the sample provided by the user and the result of classification"""
-
-    classification: str
+    sample: Sample
+    classification: str | None = None

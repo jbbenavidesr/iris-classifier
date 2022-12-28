@@ -5,7 +5,7 @@ import abc
 import random
 from typing import Iterable, List, overload
 
-from .samples import SampleDict, TestingKnownSample, TrainingKnownSample
+from .samples import SampleDict, TestingKnownSample, TrainingKnownSample, KnownSample
 
 
 class SamplePartition(List[SampleDict], abc.ABC):
@@ -66,12 +66,16 @@ class ShufflingSamplePartition(SamplePartition):
     @property
     def training(self) -> list[TrainingKnownSample]:
         self.shuffle()
-        return [TrainingKnownSample(**sample) for sample in self[: self.split]]
+        return [
+            TrainingKnownSample(KnownSample(**sample)) for sample in self[: self.split]
+        ]
 
     @property
     def testing(self) -> list[TestingKnownSample]:
         self.shuffle()
-        return [TestingKnownSample(**sample) for sample in self[self.split :]]
+        return [
+            TestingKnownSample(KnownSample(**sample)) for sample in self[self.split :]
+        ]
 
 
 class DealingPartition(abc.ABC):
@@ -124,9 +128,9 @@ class CountingDealingPartition(DealingPartition):
     def append(self, item: SampleDict) -> None:
         n, d = self.training_subset
         if self.counter % d < n:
-            self._training.append(TrainingKnownSample(**item))
+            self._training.append(TrainingKnownSample(KnownSample(**item)))
         else:
-            self._testing.append(TestingKnownSample(**item))
+            self._testing.append(TestingKnownSample(KnownSample(**item)))
         self.counter += 1
 
     @property

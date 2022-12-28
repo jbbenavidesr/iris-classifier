@@ -31,7 +31,7 @@ class Hyperparameter:
 
         pass_count, fail_count = 0, 0
         for sample in training_data.testing:
-            sample.classification = self.classify(sample)
+            sample.classification = self.classify(sample.sample)
             if sample.matches():
                 pass_count += 1
             else:
@@ -53,12 +53,15 @@ class Hyperparameter:
 
         distances: list[tuple[float, TrainingKnownSample]] = sorted(
             [
-                (self.algorithm.distance(sample, training_sample), training_sample)
+                (
+                    self.algorithm.distance(sample, training_sample.sample),
+                    training_sample,
+                )
                 for training_sample in training_data.training
             ],
             key=lambda x: x[0],
         )
-        k_nearest_species = (known.species for d, known in distances[: self.k])
+        k_nearest_species = (known.sample.species for d, known in distances[: self.k])
         frequencies: Counter[str] = Counter(k_nearest_species)
         best_fit, *_ = frequencies.most_common()
         species, _ = best_fit

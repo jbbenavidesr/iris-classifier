@@ -1,5 +1,4 @@
 from iris_classifier.hyperparameters import Hyperparameter
-from iris_classifier.samples import ClassifiedSample, UnknownSample
 from iris_classifier.training import TrainingData
 
 from .mock_data import training_data as mock_training_data
@@ -33,14 +32,3 @@ def test_training_data_test(
     assert training_data.tuning[0] is hyperparameter
     assert hyperparameter.quality is not None
     assert training_data.tested is not None
-
-
-def test_training_data_classify(
-    training_data: TrainingData, hyperparameter: Hyperparameter
-) -> None:
-    """Test the classification of a training data."""
-    unknown_sample = UnknownSample(1.0, 2.0, 3.0, 4.0)
-    sample = training_data.classify(hyperparameter, unknown_sample)
-
-    assert isinstance(sample, ClassifiedSample)
-    assert sample.classification == "Iris-virginica"

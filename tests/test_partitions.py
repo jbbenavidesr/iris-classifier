@@ -1,62 +1,89 @@
 from iris_classifier.partitions import (
-    CountingDealingPartition,
-    ShufflingSamplePartition,
+    partition_samples,
+    training_67,
+    training_75,
+    training_80,
+    training_90,
 )
-
-from .mock_data import training_data as mock_training_data
-
-
-def test_shuffling_sample_partition_empty_init() -> None:
-    """Test the initialization of a shuffling sample partition."""
-    partition = ShufflingSamplePartition()
-    assert partition.training == []
-    assert partition.testing == []
+from iris_classifier.samples import KnownSample
 
 
-def test_shuffling_sample_partition_init_with_iterable() -> None:
-    """Test the loading of a shuffling sample partition."""
-    partition = ShufflingSamplePartition(mock_training_data)
-    assert len(partition.training) == 40
-    assert len(partition.testing) == 10
+def test_training_67_rule(known_sample: KnownSample):
+    """Test the training_67 rule."""
+    assert not training_67(known_sample, 0)
+    assert training_67(known_sample, 1)
+    assert training_67(known_sample, 2)
+    assert not training_67(known_sample, 3)
+    assert training_67(known_sample, 4)
+    assert training_67(known_sample, 5)
+    assert not training_67(known_sample, 6)
+    assert training_67(known_sample, 7)
+    assert training_67(known_sample, 8)
+    assert not training_67(known_sample, 9)
+    assert training_67(known_sample, 10)
+    assert training_67(known_sample, 11)
+    assert not training_67(known_sample, 12)
 
 
-def test_shuffling_sample_partition_training_subset_proportion() -> None:
-    """Test the training subset proportion of a shuffling sample partition."""
-    partition = ShufflingSamplePartition(mock_training_data, training_subset=(9, 10))
-    assert len(partition.training) == 45
-    assert len(partition.testing) == 5
+def test_training_75_rule(known_sample: KnownSample):
+    """Test the training_75 rule."""
+    assert not training_75(known_sample, 0)
+    assert training_75(known_sample, 1)
+    assert training_75(known_sample, 2)
+    assert training_75(known_sample, 3)
+    assert not training_75(known_sample, 4)
+    assert training_75(known_sample, 5)
+    assert training_75(known_sample, 6)
+    assert training_75(known_sample, 7)
+    assert not training_75(known_sample, 8)
+    assert training_75(known_sample, 9)
+    assert training_75(known_sample, 10)
+    assert training_75(known_sample, 11)
+    assert not training_75(known_sample, 12)
 
 
-def test_shuffling_sample_partition_training_subset_proportion_2() -> None:
-    """Test the training subset proportion of a shuffling sample partition."""
-    partition = ShufflingSamplePartition(mock_training_data, training_subset=(5, 10))
-    assert len(partition.training) == 25
-    assert len(partition.testing) == 25
+def test_training_80_rule(known_sample: KnownSample):
+    """Test the training_80 rule."""
+    assert not training_80(known_sample, 0)
+    assert training_80(known_sample, 1)
+    assert training_80(known_sample, 2)
+    assert training_80(known_sample, 3)
+    assert training_80(known_sample, 4)
+    assert not training_80(known_sample, 5)
+    assert training_80(known_sample, 6)
+    assert training_80(known_sample, 7)
+    assert training_80(known_sample, 8)
+    assert training_80(known_sample, 9)
+    assert not training_80(known_sample, 10)
 
 
-def test_counting_dealing_partition_empty_init() -> None:
-    """Test the initialization of a counting dealing partition."""
-    partition = CountingDealingPartition()
-    assert partition.training == []
-    assert partition.testing == []
+def test_training_90_rule(known_sample: KnownSample):
+    """Test the training_90 rule."""
+    assert not training_90(known_sample, 0)
+    assert training_90(known_sample, 1)
+    assert training_90(known_sample, 2)
+    assert training_90(known_sample, 3)
+    assert training_90(known_sample, 4)
+    assert training_90(known_sample, 5)
+    assert training_90(known_sample, 6)
+    assert training_90(known_sample, 7)
+    assert training_90(known_sample, 8)
+    assert training_90(known_sample, 9)
+    assert not training_90(known_sample, 10)
 
 
-def test_counting_dealing_partition_init_with_iterable() -> None:
-    """Test the loading of a counting dealing partition."""
-    partition = CountingDealingPartition(mock_training_data)
-    assert len(partition.training) == 40
-    assert len(partition.testing) == 10
-
-
-def test_counting_dealing_partition_training_subset_proportion() -> None:
-    """Test the training subset proportion of a counting dealing partition."""
-    partition = CountingDealingPartition(mock_training_data, training_subset=(9, 10))
-    assert len(partition.training) == 45
-    assert len(partition.testing) == 5
-
-
-def test_counting_dealing_partition_training_subset_proportion_2() -> None:
-    """Test the training subset proportion of a counting dealing partition."""
-    partition = CountingDealingPartition(mock_training_data, training_subset=(5, 10))
-    assert len(partition.training) == 25
-    assert len(partition.testing) == 25
+def test_partition_samples(mock_training_data: list[KnownSample]):
+    """Test partition_samples."""
+    samples = mock_training_data
+    training_samples, testing_samples = partition_samples(samples, training_67)
+    assert len(training_samples) == 20
+    assert len(testing_samples) == 10
+    training_samples, testing_samples = partition_samples(samples, training_75)
+    assert len(training_samples) == 22
+    assert len(testing_samples) == 8
+    training_samples, testing_samples = partition_samples(samples, training_80)
+    assert len(training_samples) == 24
+    assert len(testing_samples) == 6
+    training_samples, testing_samples = partition_samples(samples, training_90)
+    assert len(training_samples) == 27
+    assert len(testing_samples) == 3

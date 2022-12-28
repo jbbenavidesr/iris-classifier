@@ -8,20 +8,18 @@ will select the hyperparameters used by the model.
 from __future__ import annotations
 
 import datetime
-from typing import TYPE_CHECKING, Iterable
+from typing import TYPE_CHECKING, Callable, Iterable
 
 if TYPE_CHECKING:
     from .hyperparameters import Hyperparameter
 
-from .partitions import CountingDealingPartition
-from .samples import SampleDict, TestingKnownSample, TrainingKnownSample
+from .partitions import partition_samples, training_90
+from .samples import KnownSample, TestingKnownSample, TrainingKnownSample
 
 
 class TrainingData:
     """Set of training  and testing data used to train the model. It has methods to load
     and test the samples."""
-
-    partition_class = CountingDealingPartition
 
     def __init__(self, name: str) -> None:
         """Initialize the training data.
@@ -35,15 +33,18 @@ class TrainingData:
         self.testing: list[TestingKnownSample] = []
         self.tuning: list[Hyperparameter] = []
 
-    def load(self, raw_data_source: Iterable[SampleDict]) -> None:
+    def load(
+        self,
+        raw_data_source: Iterable[KnownSample],
+        partition_rule: Callable[[KnownSample, int], bool] = training_90,
+    ) -> None:
         """Load the raw data source and partition it into training and testing data.
 
         :return: The number of samples loaded and the number of invalid samples.
         """
-        partition_class = self.partition_class
-        partition = partition_class(raw_data_source, training_subset=(9, 10))
-        self.training = partition.training
-        self.testing = partition.testing
+        training, testing = partition_samples(raw_data_source, partition_rule)
+        self.training = training
+        self.testing = testing
         self.uploaded = datetime.datetime.now(tz=datetime.timezone.utc)
 
     def test(self, parameter: Hyperparameter) -> None:

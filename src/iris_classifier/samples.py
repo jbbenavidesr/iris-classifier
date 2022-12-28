@@ -1,15 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import NamedTuple, TypedDict
-
-
-class SampleDict(TypedDict):
-    sepal_length: float
-    sepal_width: float
-    petal_length: float
-    petal_width: float
-    species: str
+from typing import NamedTuple
 
 
 class Sample(NamedTuple):

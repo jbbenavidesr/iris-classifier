@@ -1,7 +1,6 @@
 from iris_classifier.hyperparameters import Hyperparameter
+from iris_classifier.samples import KnownSample
 from iris_classifier.training import TrainingData
-
-from .mock_data import training_data as mock_training_data
 
 
 def test_training_data_init() -> None:
@@ -13,12 +12,12 @@ def test_training_data_init() -> None:
     assert training_data.tuning == []
 
 
-def test_training_data_load() -> None:
+def test_training_data_load(mock_training_data: list[KnownSample]) -> None:
     """Test the loading of a training data."""
     training_data = TrainingData("Test training data")
     training_data.load(mock_training_data)
-    assert len(training_data.training) == 45
-    assert len(training_data.testing) == 5
+    assert len(training_data.training) == 27
+    assert len(training_data.testing) == 3
     assert training_data.uploaded is not None
 
 

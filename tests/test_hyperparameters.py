@@ -37,7 +37,7 @@ def test_hyperparameter_test(training_data: TrainingData) -> None:
     distance = EuclidianDistance()
     hyperparameter = Hyperparameter(3, distance, weakref.ref(training_data))
     hyperparameter.test()
-    assert hyperparameter.quality == 0.4
+    assert hyperparameter.quality == 0.0
 
 
 def test_euclidean_distance() -> None:

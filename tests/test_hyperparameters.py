@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import weakref
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -18,7 +19,7 @@ from iris_classifier.samples import Sample
 def test_hyperparameter_init(training_data: TrainingData) -> None:
     """Test the initialization of a hyperparameter."""
     distance = EuclidianDistance()
-    hyperparameter = Hyperparameter(3, distance, training_data)
+    hyperparameter = Hyperparameter(3, distance, weakref.ref(training_data))
     assert hyperparameter.k == 3
     assert hyperparameter.algorithm == distance
     assert hyperparameter.data() == training_data
@@ -26,7 +27,7 @@ def test_hyperparameter_init(training_data: TrainingData) -> None:
 
 def test_hyperparameter_classify(training_data: TrainingData) -> None:
     distance = EuclidianDistance()
-    hyperparameter = Hyperparameter(3, distance, training_data)
+    hyperparameter = Hyperparameter(3, distance, weakref.ref(training_data))
     assert hyperparameter.classify(training_data.training[0]) == "Iris-virginica"
 
 
@@ -34,7 +35,7 @@ def test_hyperparameter_test(training_data: TrainingData) -> None:
     """Test the testing of a hyperparameter."""
 
     distance = EuclidianDistance()
-    hyperparameter = Hyperparameter(3, distance, training_data)
+    hyperparameter = Hyperparameter(3, distance, weakref.ref(training_data))
     hyperparameter.test()
     assert hyperparameter.quality == 0.4
 

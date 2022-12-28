@@ -1,4 +1,4 @@
-import random
+import weakref
 
 import pytest
 
@@ -7,8 +7,6 @@ from iris_classifier.hyperparameters import Hyperparameter
 from iris_classifier.training import TrainingData
 
 from .mock_data import training_data as mock_training_data
-
-random.seed(42)
 
 
 @pytest.fixture(scope="module")
@@ -23,4 +21,4 @@ def training_data() -> TrainingData:
 def hyperparameter(training_data: TrainingData) -> Hyperparameter:
     """Return a hyperparameter."""
     distance = ED()
-    return Hyperparameter(3, distance, training_data)
+    return Hyperparameter(3, distance, weakref.ref(training_data))

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import weakref
 from collections import Counter
+from dataclasses import dataclass, field
 from typing import Optional
 
 from .distances import Distance
@@ -10,20 +11,15 @@ from .samples import Sample, TrainingKnownSample
 from .training import TrainingData
 
 
+@dataclass
 class Hyperparameter:
     """A hyperparameter set of values for the model and the overall quality of the
     classification."""
 
-    def __init__(self, k: int, algorithm: Distance, training: TrainingData) -> None:
-        """Initialize a hyperparameter set.
-
-        :param k: The k value for the model.
-        :param training: The training data used to train the model.
-        """
-        self.k = k
-        self.algorithm = algorithm
-        self.data: weakref.ReferenceType[TrainingData] = weakref.ref(training)
-        self.quality: float
+    k: int
+    algorithm: Distance
+    data: weakref.ReferenceType[TrainingData]
+    quality: float | None = field(default=None, init=False)
 
     def test(self) -> None:
         """Test the hyperparameter set."""

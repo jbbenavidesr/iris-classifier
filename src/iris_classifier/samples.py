@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TypedDict
+from typing import NamedTuple, TypedDict
 
 
 class SampleDict(TypedDict):
@@ -12,8 +12,7 @@ class SampleDict(TypedDict):
     species: str
 
 
-@dataclass(frozen=True)
-class Sample:
+class Sample(NamedTuple):
     """A sample of an iris flower. Base class used for all types of samples"""
 
     sepal_length: float
@@ -22,15 +21,14 @@ class Sample:
     petal_width: float
 
 
-@dataclass(frozen=True)
-class KnownSample(Sample):
+class KnownSample(NamedTuple):
     """A sample of an iris flower with a known spicies."""
 
+    sample: Sample
     species: str
 
 
-@dataclass(frozen=True)
-class TrainingKnownSample:
+class TrainingKnownSample(NamedTuple):
     """A sample of an iris flower with a known spicies used for training the model."""
 
     sample: KnownSample

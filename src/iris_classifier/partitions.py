@@ -73,14 +73,36 @@ class ShufflingSamplePartition(SamplePartition):
     def training(self) -> list[TrainingKnownSample]:
         self.shuffle()
         return [
-            TrainingKnownSample(KnownSample(**sample)) for sample in self[: self.split]
+            TrainingKnownSample(
+                sample=KnownSample(
+                    sample=Sample(
+                        sepal_length=sample["sepal_length"],
+                        sepal_width=sample["sepal_width"],
+                        petal_length=sample["petal_length"],
+                        petal_width=sample["petal_width"],
+                    ),
+                    species=sample["species"],
+                )
+            )
+            for sample in self[: self.split]
         ]
 
     @property
     def testing(self) -> list[TestingKnownSample]:
         self.shuffle()
         return [
-            TestingKnownSample(KnownSample(**sample)) for sample in self[self.split :]
+            TestingKnownSample(
+                sample=KnownSample(
+                    sample=Sample(
+                        sepal_length=sample["sepal_length"],
+                        sepal_width=sample["sepal_width"],
+                        petal_length=sample["petal_length"],
+                        petal_width=sample["petal_width"],
+                    ),
+                    species=sample["species"],
+                )
+            )
+            for sample in self[self.split :]
         ]
 
 
@@ -131,12 +153,36 @@ class CountingDealingPartition(DealingPartition):
         for item in items:
             self.append(item)
 
-    def append(self, item: SampleDict) -> None:
+    def append(self, sample: SampleDict) -> None:
         n, d = self.training_subset
         if self.counter % d < n:
-            self._training.append(TrainingKnownSample(KnownSample(**item)))
+            self._training.append(
+                TrainingKnownSample(
+                    sample=KnownSample(
+                        sample=Sample(
+                            sepal_length=sample["sepal_length"],
+                            sepal_width=sample["sepal_width"],
+                            petal_length=sample["petal_length"],
+                            petal_width=sample["petal_width"],
+                        ),
+                        species=sample["species"],
+                    )
+                )
+            )
         else:
-            self._testing.append(TestingKnownSample(KnownSample(**item)))
+            self._testing.append(
+                TestingKnownSample(
+                    sample=KnownSample(
+                        sample=Sample(
+                            sepal_length=sample["sepal_length"],
+                            sepal_width=sample["sepal_width"],
+                            petal_length=sample["petal_length"],
+                            petal_width=sample["petal_width"],
+                        ),
+                        species=sample["species"],
+                    )
+                )
+            )
         self.counter += 1
 
     @property
@@ -169,17 +215,17 @@ TestingList = list[TestingKnownSample]
 
 
 def partition_samples(
-    samples: Iterable[SampleDict],
+    samples: Iterable[KnownSample],
     rule: Callable[[KnownSample, int], bool],
 ) -> tuple[TrainingList, TestingList]:
     """Partition samples into training and testing sets."""
     training_samples = list(
-        TrainingKnownSample(KnownSample(**sample))
+        TrainingKnownSample(sample)
         for i, sample in enumerate(samples)
         if rule(sample, i)
     )
     testing_samples = list(
-        TestingKnownSample(KnownSample(**sample))
+        TestingKnownSample(sample)
         for i, sample in enumerate(samples)
         if not rule(sample, i)
     )

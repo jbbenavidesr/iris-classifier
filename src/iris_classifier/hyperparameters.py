@@ -31,7 +31,7 @@ class Hyperparameter:
 
         pass_count, fail_count = 0, 0
         for sample in training_data.testing:
-            sample.classification = self.classify(sample.sample)
+            sample.classification = self.classify(sample.sample.sample)
             if sample.matches():
                 pass_count += 1
             else:
@@ -54,7 +54,7 @@ class Hyperparameter:
         distances: list[tuple[float, TrainingKnownSample]] = sorted(
             [
                 (
-                    self.algorithm.distance(sample, training_sample.sample),
+                    self.algorithm.distance(sample, training_sample.sample.sample),
                     training_sample,
                 )
                 for training_sample in training_data.training

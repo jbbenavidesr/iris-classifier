@@ -32,6 +32,6 @@ def sample() -> Sample:
 
 
 @pytest.fixture(scope="module")
-def known_sample() -> KnownSample:
+def known_sample(sample: Sample) -> KnownSample:
     """Return a known sample."""
-    return KnownSample(1.0, 2.0, 3.0, 4.0, "Iris-setosa")
+    return KnownSample(sample, "Iris-setosa")

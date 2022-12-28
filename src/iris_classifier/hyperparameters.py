@@ -6,7 +6,7 @@ from collections import Counter
 from typing import Optional
 
 from .distances import Distance
-from .samples import Sample, Species, TrainingKnownSample
+from .samples import Sample, TrainingKnownSample
 from .training import TrainingData
 
 
@@ -43,7 +43,7 @@ class Hyperparameter:
 
         self.quality = pass_count / (pass_count + fail_count)
 
-    def classify(self, sample: Sample) -> Species:
+    def classify(self, sample: Sample) -> str:
         """Classify a sample.
 
         :param sample: The sample to classify.
@@ -63,7 +63,7 @@ class Hyperparameter:
             key=lambda x: x[0],
         )
         k_nearest_species = (known.species for d, known in distances[: self.k])
-        frequencies: Counter[Species] = Counter(k_nearest_species)
+        frequencies: Counter[str] = Counter(k_nearest_species)
         best_fit, *_ = frequencies.most_common()
         species, _ = best_fit
         return species

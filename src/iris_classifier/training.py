@@ -71,4 +71,10 @@ class TrainingData:
         :return: The classified sample.
         """
         classification = parameter.classify(sample)
-        return ClassifiedSample(classification, sample)
+        return ClassifiedSample(
+            sepal_length=sample.sepal_length,
+            sepal_width=sample.sepal_width,
+            petal_length=sample.petal_length,
+            petal_width=sample.petal_width,
+            classification=classification,
+        )

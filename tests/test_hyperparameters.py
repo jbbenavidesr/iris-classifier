@@ -2,16 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import pytest
-
 if TYPE_CHECKING:
     from iris_classifier.training import TrainingData
 
 from iris_classifier.distances import (
+    ChebyshevDistance,
     EuclidianDistance,
     ManhattanDistance,
     SorensenDistance,
-    ChebyshevDistance,
 )
 from iris_classifier.hyperparameters import Hyperparameter
 from iris_classifier.samples import Sample

@@ -1,6 +1,6 @@
 from iris_classifier.partitions import (
-    ShufflingSamplePartition,
     CountingDealingPartition,
+    ShufflingSamplePartition,
 )
 
 from .mock_data import training_data as mock_training_data

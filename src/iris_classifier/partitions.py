@@ -1,4 +1,5 @@
 """Abstract classes for IrisClassifier."""
+from collections import defaultdict
 from typing import Callable, Iterable
 
 from .samples import KnownSample, TestingKnownSample, TrainingKnownSample
@@ -29,14 +30,11 @@ def partition_samples(
     rule: Callable[[KnownSample, int], bool],
 ) -> tuple[TrainingList, TestingList]:
     """Partition samples into training and testing sets."""
-    training_samples = list(
-        TrainingKnownSample(sample)
-        for i, sample in enumerate(samples)
-        if rule(sample, i)
-    )
-    testing_samples = list(
-        TestingKnownSample(sample)
-        for i, sample in enumerate(samples)
-        if not rule(sample, i)
-    )
+    pools: defaultdict[bool, list[KnownSample]] = defaultdict(list)
+    partition = ((rule(s, i), s) for i, s in enumerate(samples))
+    for usage_pool, sample in partition:
+        pools[usage_pool].append(sample)
+
+    training_samples = [TrainingKnownSample(s) for s in pools[True]]
+    testing_samples = [TestingKnownSample(s) for s in pools[False]]
     return training_samples, testing_samples

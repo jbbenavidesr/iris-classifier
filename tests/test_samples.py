@@ -1,8 +1,10 @@
 import dataclasses
+
 import pytest
+
 from iris_classifier.samples import (
-    Sample,
     KnownSample,
+    Sample,
     TestingKnownSample,
     TrainingKnownSample,
     UnknownSample,

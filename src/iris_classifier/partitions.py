@@ -3,14 +3,14 @@ from __future__ import annotations
 
 import abc
 import random
-from typing import Iterable, List, overload, Callable
+from typing import Callable, Iterable, List, overload
 
 from .samples import (
+    KnownSample,
+    Sample,
     SampleDict,
     TestingKnownSample,
     TrainingKnownSample,
-    KnownSample,
-    Sample,
 )
 
 

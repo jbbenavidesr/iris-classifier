@@ -14,11 +14,7 @@ if TYPE_CHECKING:
     from .hyperparameters import Hyperparameter
 
 from .partitions import CountingDealingPartition
-from .samples import (
-    SampleDict,
-    TestingKnownSample,
-    TrainingKnownSample,
-)
+from .samples import SampleDict, TestingKnownSample, TrainingKnownSample
 
 
 class TrainingData:

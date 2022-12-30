@@ -1,5 +1,4 @@
-from iris_classifier.hyperparameters import Hyperparameter
-from iris_classifier.samples import KnownSample
+from iris_classifier.models import Hyperparameter, KnownSample
 from iris_classifier.training import TrainingData
 
 

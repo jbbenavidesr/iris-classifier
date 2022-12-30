@@ -1,3 +1,4 @@
+from iris_classifier.models import KnownSample
 from iris_classifier.partitions import (
     partition_samples,
     training_67,
@@ -5,7 +6,6 @@ from iris_classifier.partitions import (
     training_80,
     training_90,
 )
-from iris_classifier.samples import KnownSample
 
 
 def test_training_67_rule(known_sample: KnownSample):

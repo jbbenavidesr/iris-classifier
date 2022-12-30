@@ -1,4 +1,4 @@
-from iris_classifier.samples import (
+from iris_classifier.models import (
     KnownSample,
     Sample,
     TestingKnownSample,

@@ -1,8 +1,11 @@
 """Different Implementations of pluggable distance functions for the KNN."""
+from __future__ import annotations
 
 import abc
+from typing import TYPE_CHECKING
 
-from .samples import Sample
+if TYPE_CHECKING:
+    from .models import Sample
 
 
 class Distance(abc.ABC):

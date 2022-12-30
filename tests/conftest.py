@@ -3,8 +3,7 @@ import weakref
 import pytest
 
 from iris_classifier.distances import EuclidianDistance as ED
-from iris_classifier.hyperparameters import Hyperparameter
-from iris_classifier.samples import KnownSample, Sample
+from iris_classifier.models import Hyperparameter, KnownSample, Sample
 from iris_classifier.training import TrainingData
 
 

@@ -4,11 +4,13 @@ from __future__ import annotations
 import weakref
 from collections import Counter
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
-from .distances import Distance
+if TYPE_CHECKING:
+    from iris_classifier.distances import Distance
+    from iris_classifier.training import TrainingData
+
 from .samples import Sample, TrainingKnownSample
-from .training import TrainingData
 
 
 @dataclass

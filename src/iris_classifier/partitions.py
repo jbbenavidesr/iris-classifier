@@ -1,8 +1,10 @@
 """Abstract classes for IrisClassifier."""
+from __future__ import annotations
+
 from collections import defaultdict
 from typing import Callable, Iterable
 
-from .samples import KnownSample, TestingKnownSample, TrainingKnownSample
+from .models import KnownSample, TestingKnownSample, TrainingKnownSample
 
 
 def training_80(s: KnownSample, i: int) -> bool:

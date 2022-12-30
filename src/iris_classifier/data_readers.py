@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Iterator
 
 from .exceptions import BadSampleRow
-from .samples import KnownSample, Sample
+from .models import KnownSample, Sample
 
 
 class SampleReader:

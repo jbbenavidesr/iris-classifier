@@ -11,10 +11,14 @@ import datetime
 from typing import TYPE_CHECKING, Callable, Iterable
 
 if TYPE_CHECKING:
-    from .hyperparameters import Hyperparameter
+    from .models import (
+        Hyperparameter,
+        KnownSample,
+        TestingKnownSample,
+        TrainingKnownSample,
+    )
 
 from .partitions import partition_samples, training_90
-from .samples import KnownSample, TestingKnownSample, TrainingKnownSample
 
 
 class TrainingData:

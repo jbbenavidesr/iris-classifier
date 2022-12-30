@@ -12,8 +12,7 @@ from iris_classifier.distances import (
     ManhattanDistance,
     SorensenDistance,
 )
-from iris_classifier.hyperparameters import Hyperparameter
-from iris_classifier.samples import Sample
+from iris_classifier.models import Hyperparameter, Sample
 
 
 def test_hyperparameter_init(training_data: TrainingData) -> None:

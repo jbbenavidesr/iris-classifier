@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from iris_classifier.data_readers import SampleReader, CSVIrisReader
+from iris_classifier.data_readers import CSVIrisReader, SampleReader
 
 
 def test_sample_reader_init() -> None:

@@ -2,7 +2,7 @@
 import csv
 import json
 from pathlib import Path
-from typing import Iterator, TypedDict, Any
+from typing import Any, Iterator, TypedDict
 
 import jsonschema
 

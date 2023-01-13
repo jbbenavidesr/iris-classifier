@@ -1,87 +1,36 @@
 """Different Implementations of pluggable distance functions for the KNN."""
 from __future__ import annotations
 
-import abc
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, Iterable
 
 if TYPE_CHECKING:
-    from .models import Sample
+    from .models import TrainingKnownSample, AnySample
+
+DistanceFunc = Callable[[TrainingKnownSample, AnySample], float]
 
 
-class Distance(abc.ABC):
-    """Base class for a pluggable distance algorithm to use as hyperparameter"""
-
-    @abc.abstractmethod
-    def distance(self, a: Sample, b: Sample) -> float:
-        """Compute the distance between two samples.
-
-        :param a: The first sample.
-        :param b: The second sample.
-        :return: The distance between the samples.
-        """
-
-
-class MinkowskiDistance(Distance):
-    """Minkowski distance.
-
-    This is a generalization of the Euclidean and Manhattan distances.
-    """
-
-    p: int
-
-    def distance(self, a: Sample, b: Sample) -> float:
-        return sum(
-            [
-                abs(a.sepal_length - b.sepal_length) ** self.p,
-                abs(a.sepal_width - b.sepal_width) ** self.p,
-                abs(a.petal_length - b.petal_length) ** self.p,
-                abs(a.petal_width - b.petal_width) ** self.p,
-            ]
-        ) ** (1 / self.p)
+def minkowski(
+    s1: TrainingKnownSample,
+    s2: AnySample,
+    m: int,
+    summarize: Callable[[Iterable[float]], float] = sum,
+) -> float:
+    """Generalization of distance calculations"""
+    return (
+        summarize((abs(a - b) ** m for a, b in zip(s1.sample.sample, s2.sample)))
+    ) ** (1 / m)
 
 
-class EuclidianDistance(MinkowskiDistance):
-    """Euclidean distance."""
-
-    p = 2
-
-
-class ManhattanDistance(MinkowskiDistance):
-    """Manhattan distance."""
-
-    p = 1
+def manhattan(s1: TrainingKnownSample, s2: AnySample) -> float:
+    """Manhattan distance"""
+    return minkowski(s1, s2, m=1)
 
 
-class ChebyshevDistance(Distance):
-    """Chebyshev distance."""
-
-    def distance(self, a: Sample, b: Sample) -> float:
-        return max(
-            [
-                abs(a.sepal_length - b.sepal_length),
-                abs(a.sepal_width - b.sepal_width),
-                abs(a.petal_length - b.petal_length),
-                abs(a.petal_width - b.petal_width),
-            ]
-        )
+def euclidean(s1: TrainingKnownSample, s2: AnySample) -> float:
+    """Euclidean distance"""
+    return minkowski(s1, s2, m=2)
 
 
-class SorensenDistance(Distance):
-    """Sorensen distance."""
-
-    def distance(self, a: Sample, b: Sample) -> float:
-        return sum(
-            [
-                abs(a.sepal_length - b.sepal_length),
-                abs(a.sepal_width - b.sepal_width),
-                abs(a.petal_length - b.petal_length),
-                abs(a.petal_width - b.petal_width),
-            ]
-        ) / sum(
-            [
-                abs(a.sepal_length + b.sepal_length),
-                abs(a.sepal_width + b.sepal_width),
-                abs(a.petal_length + b.petal_length),
-                abs(a.petal_width + b.petal_width),
-            ]
-        )
+def chebyshev(s1: TrainingKnownSample, s2: AnySample) -> float:
+    """Chebyshev distance"""
+    return minkowski(s1, s2, m=1, summarize=max)

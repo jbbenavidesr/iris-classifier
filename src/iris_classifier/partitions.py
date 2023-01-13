@@ -2,41 +2,55 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from typing import Callable, Iterable
+import itertools
+from typing import Callable, Iterable, DefaultDict, List, Iterator
 
-from .models import KnownSample, TestingKnownSample, TrainingKnownSample
+from .models import (
+    KnownSample,
+    TestingKnownSample,
+    TrainingKnownSample,
+    TrainingList,
+    TestingList,
+)
 
 
-def training_80(s: KnownSample, i: int) -> bool:
+def training_80(i: int) -> bool:
     return i % 5 != 0
 
 
-def training_90(s: KnownSample, i: int) -> bool:
+def training_90(i: int) -> bool:
     return i % 10 != 0
 
 
-def training_75(s: KnownSample, i: int) -> bool:
+def training_75(i: int) -> bool:
     return i % 4 != 0
 
 
-def training_67(s: KnownSample, i: int) -> bool:
+def training_67(i: int) -> bool:
     return i % 3 != 0
 
 
-TrainingList = list[TrainingKnownSample]
-TestingList = list[TestingKnownSample]
+ModuloDict = DefaultDict[int, List[KnownSample]]
 
 
 def partition_samples(
-    samples: Iterable[KnownSample],
-    rule: Callable[[KnownSample, int], bool],
+    samples: Iterable[KnownSample], training_rule: Callable[[int], bool]
 ) -> tuple[TrainingList, TestingList]:
-    """Partition samples into training and testing sets."""
-    pools: defaultdict[bool, list[KnownSample]] = defaultdict(list)
-    partition = ((rule(s, i), s) for i, s in enumerate(samples))
-    for usage_pool, sample in partition:
-        pools[usage_pool].append(sample)
+    """Partitions the samples into training and testing sets."""
+    rule_multiple = 60
+    partitions: ModuloDict = defaultdict(list)
+    for s in samples:
+        partitions[hash(s) % rule_multiple].append(s)
 
-    training_samples = [TrainingKnownSample(s) for s in pools[True]]
-    testing_samples = [TestingKnownSample(s) for s in pools[False]]
-    return training_samples, testing_samples
+    training_partitions: list[Iterator[TrainingKnownSample]] = []
+    testing_partitions: list[Iterator[TestingKnownSample]] = []
+    for i, p in enumerate(partitions.values()):
+        if training_rule(i):
+            training_partitions.append((TrainingKnownSample(s) for s in p))
+        else:
+            testing_partitions.append((TestingKnownSample(s) for s in p))
+
+    training = list(itertools.chain(*training_partitions))
+    testing = list(itertools.chain(*testing_partitions))
+
+    return training, testing

@@ -1,70 +1,41 @@
 """Hyperparameter sets for the model."""
 from __future__ import annotations
 
-import weakref
-from collections import Counter
-from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, NamedTuple
 
 if TYPE_CHECKING:
-    from iris_classifier.distances import Distance
-    from iris_classifier.training import TrainingData
+    from iris_classifier.distances import DistanceFunc
+    from iris_classifier.classifiers import Classifier
 
-from .samples import Sample, TrainingKnownSample
+from .samples import (
+    TrainingList,
+    AnySample,
+    TestingList,
+)
 
 
-@dataclass
-class Hyperparameter:
+class Hyperparameter(NamedTuple):
     """A hyperparameter set of values for the model and the overall quality of the
     classification."""
 
     k: int
-    algorithm: Distance
-    data: weakref.ReferenceType[TrainingData]
-    quality: float | None = field(default=None, init=False)
+    distance_function: DistanceFunc
+    training_data: TrainingList
+    classifier: Classifier
 
-    def test(self) -> None:
-        """Test the hyperparameter set."""
-        training_data: Optional[TrainingData] = self.data()
-        if not training_data:
-            raise RuntimeError(
-                "Training data is not available anymore. Broken Weak Reference."
-            )
-
-        pass_count, fail_count = 0, 0
-        for sample in training_data.testing:
-            sample.classification = self.classify(sample.sample.sample)
-            if sample.matches():
-                pass_count += 1
-            else:
-                fail_count += 1
-
-        self.quality = pass_count / (pass_count + fail_count)
-
-    def classify(self, sample: Sample) -> str:
+    def classify(self, unknown: AnySample) -> str:
         """Classify a sample.
 
         :param sample: The sample to classify.
         :return: The classification of the sample.
         """
-        training_data: Optional[TrainingData] = self.data()
-        if not training_data:
-            raise RuntimeError(
-                "Training data is not available anymore. Broken Weak Reference."
-            )
+        classifier = self.classifier
+        return classifier(self.k, self.distance_function, self.training_data, unknown)
 
-        distances: list[tuple[float, TrainingKnownSample]] = sorted(
-            [
-                (
-                    self.algorithm.distance(sample, training_sample.sample.sample),
-                    training_sample,
-                )
-                for training_sample in training_data.training
-            ],
-            key=lambda x: x[0],
+    def test(self, testing: TestingList) -> int:
+
+        pass_fail = map(
+            lambda t: (1 if t.sample.species == self.classify(t.sample) else 0),
+            testing,
         )
-        k_nearest_species = (known.sample.species for d, known in distances[: self.k])
-        frequencies: Counter[str] = Counter(k_nearest_species)
-        best_fit, *_ = frequencies.most_common()
-        species, _ = best_fit
-        return species
+        return sum(pass_fail)

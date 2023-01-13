@@ -40,7 +40,7 @@ class TrainingData:
     def load(
         self,
         raw_data_source: Iterable[KnownSample],
-        partition_rule: Callable[[KnownSample, int], bool] = training_90,
+        partition_rule: Callable[[int], bool] = training_90,
     ) -> None:
         """Load the raw data source and partition it into training and testing data.
 
@@ -56,6 +56,6 @@ class TrainingData:
 
         :param parameter: The hyperparameter set to test.
         """
-        parameter.test()
+        parameter.test(self.testing)
         self.tuning.append(parameter)
         self.tested = datetime.datetime.now(tz=datetime.timezone.utc)

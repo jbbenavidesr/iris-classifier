@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import NamedTuple
 
 
@@ -26,26 +25,32 @@ class TrainingKnownSample(NamedTuple):
     sample: KnownSample
 
 
-@dataclass
-class TestingKnownSample:
+class TestingKnownSample(NamedTuple):
     """A sample of an iris flower with a known spicies used for testing the model."""
 
     sample: KnownSample
-    classification: str | None = None
-
-    __test__ = False
-
-    def matches(self) -> bool:
-        """Check if the classification matches the spicies.
-
-        :return: True if the classification matches the spicies, False otherwise.
-        """
-        return self.sample.species == self.classification
 
 
-@dataclass
-class UnknownSample:
+class UnknownSample(NamedTuple):
     """A sample of an iris flower with an unknown spicies."""
 
     sample: Sample
-    classification: str | None = None
+
+
+class ClassifiedKnownSample(NamedTuple):
+    """A sample of an iris flower with a known spicies and a classification."""
+
+    sample: KnownSample
+    classification: str
+
+
+class ClassifiedUnknownSample(NamedTuple):
+    """A sample of an iris flower with an unknown spicies and a classification."""
+
+    sample: UnknownSample
+    classification: str
+
+
+TrainingList = list[TrainingKnownSample]
+TestingList = list[TestingKnownSample]
+AnySample = KnownSample | UnknownSample

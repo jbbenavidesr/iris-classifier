@@ -1,14 +1,12 @@
 """Module containing the classifiers used to classify the iris dataset"""
-from typing import NamedTuple, Callable, TYPE_CHECKING, Counter, cast
-import collections
 import bisect
+import collections
 import heapq
+from typing import Callable, Counter, NamedTuple, cast
 
-if TYPE_CHECKING:
-    from .distances import DistanceFunc
 
-from .models import TrainingKnownSample, TrainingList, AnySample
 from .distances import DistanceFunc
+from .models import AnySample, TrainingKnownSample, TrainingList
 
 Classifier = Callable[[int, DistanceFunc, TrainingList, AnySample], str]
 

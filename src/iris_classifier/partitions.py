@@ -1,16 +1,16 @@
 """Abstract classes for IrisClassifier."""
 from __future__ import annotations
 
-from collections import defaultdict
 import itertools
-from typing import Callable, Iterable, DefaultDict, List, Iterator
+from collections import defaultdict
+from typing import Callable, DefaultDict, Iterable, Iterator, List
 
 from .models import (
     KnownSample,
     TestingKnownSample,
+    TestingList,
     TrainingKnownSample,
     TrainingList,
-    TestingList,
 )
 
 

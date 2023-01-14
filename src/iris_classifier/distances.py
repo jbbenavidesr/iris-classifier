@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Callable, Iterable
 
 if TYPE_CHECKING:
-    from .models import TrainingKnownSample, AnySample
+    from .models import AnySample, TrainingKnownSample
 
 DistanceFunc = Callable[["TrainingKnownSample", "AnySample"], float]
 

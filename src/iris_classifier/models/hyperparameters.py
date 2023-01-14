@@ -7,11 +7,7 @@ if TYPE_CHECKING:
     from iris_classifier.distances import DistanceFunc
     from iris_classifier.classifiers import Classifier
 
-from .samples import (
-    TrainingList,
-    AnySample,
-    TestingList,
-)
+from .samples import AnySample, TestingList, TrainingList
 
 
 class Hyperparameter(NamedTuple):

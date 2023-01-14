@@ -1,19 +1,19 @@
 """Entry point for the application"""
-import time
 import random
+import time
 
-from iris_classifier.models import (
-    TrainingKnownSample,
-    TestingKnownSample,
-    Hyperparameter,
-    Sample,
-    KnownSample,
-    TrainingList,
-    TestingList,
-)
 from iris_classifier.classifiers import Classifier, k_nn_1, k_nn_b, k_nn_q
 from iris_classifier.distances import manhattan
-from iris_classifier.partitions import training_80, partition_samples
+from iris_classifier.models import (
+    Hyperparameter,
+    KnownSample,
+    Sample,
+    TestingKnownSample,
+    TestingList,
+    TrainingKnownSample,
+    TrainingList,
+)
+from iris_classifier.partitions import partition_samples, training_80
 
 
 def a_lot_of_data(n: int) -> tuple[TrainingList, TestingList]:
@@ -51,7 +51,9 @@ def test_classifier(
     q = h.test(testing_data)
     end = time.perf_counter()
     print(
-        f"| {classifier.__name__:10s} | q={q:5}/{len(testing_data):5} | {end - start:6.3f}s |"
+        f"| {classifier.__name__:10s} "
+        f"| q={q:5}/{len(testing_data):5} "
+        f"| {end - start:6.3f}s |"
     )
 
 

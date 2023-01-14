@@ -1,20 +1,39 @@
 """Entry point for the application"""
 import time
+import random
 
 from iris_classifier.models import (
     TrainingKnownSample,
     TestingKnownSample,
     Hyperparameter,
+    Sample,
+    KnownSample,
     TrainingList,
     TestingList,
 )
 from iris_classifier.classifiers import Classifier, k_nn_1, k_nn_b, k_nn_q
 from iris_classifier.distances import manhattan
+from iris_classifier.partitions import training_80, partition_samples
 
 
 def a_lot_of_data(n: int) -> tuple[TrainingList, TestingList]:
-    """Generate a lot of data for testing"""
-    return [], []
+    """Generate a lot of random data for testing"""
+    samples = (
+        KnownSample(
+            sample=Sample(
+                random.random() * 10,
+                random.random() * 10,
+                random.random() * 10,
+                random.random() * 10,
+            ),
+            species=random.choice(
+                ["Iris-virginica", "Iris-versicolor", "Iris-virginica"]
+            ),
+        )
+        for _ in range(n)
+    )
+
+    return partition_samples(samples, training_80)
 
 
 def test_classifier(
@@ -32,12 +51,12 @@ def test_classifier(
     q = h.test(testing_data)
     end = time.perf_counter()
     print(
-        f"| {classifier.__name__:10s} | {q:5}/{len(testing_data):5} | {end - start:6.3f}s |"
+        f"| {classifier.__name__:10s} | q={q:5}/{len(testing_data):5} | {end - start:6.3f}s |"
     )
 
 
 def main() -> None:
-    test, train = a_lot_of_data(5_000)
+    train, test = a_lot_of_data(5_000)
     print("| algorithm  |  test quality  |  time  |")
     print("|------------|----------------|--------|")
     test_classifier(train, test, k_nn_1)
